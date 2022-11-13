@@ -8,7 +8,7 @@ ______________Initialisation of the database_______________
 ___________________________________________________________
 '''
 
-conn = sqlite3.connect('POS_database.db')
+conn = sqlite3.connect('../sql/POS_database.db')
 cursor=conn.cursor()
 print("Database opened successfully")
 
@@ -64,6 +64,12 @@ def creation_tables():
                         CREDIT_CARD_ID INT NON NULL)
                         """)
 
+    cursor.execute("""CREATE TABLE IF NOT EXISTS users(
+                USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                USERNAME TEXT NON NULL UNIQUE,
+                PASSWORD TEXT NON NULL)   
+            """)
+
 
 def drop_table(table_name):
     command="DROP TABLE ", table_name
@@ -95,7 +101,7 @@ def SQL_Query_with_target(target,request):
         request,
         (target,),
     ).fetchall()
-    print(rows)
+    print(rows) # Might need to remove #-Sean
     return rows
 
 def SQL_Query_table(table):
@@ -104,6 +110,23 @@ def SQL_Query_table(table):
     rows= cursor.execute(command).fetchall()
     print(rows)
 
+def format_list(inputs:list)->str:
+    '''
+    Takes in a list, and returns them as a list to be inserted into the 
+    '''
+    '("1","13/08","12.34","+")'
+    out = '('
+    if type(inputs[0]) != list:
+        for cell in inputs:
+            out += f"'{cell}',"
+    else:
+        for row in inputs:
+            out += '('
+            for cell in row:
+                out += f"'{cell}',"
+            out += '),'
+    out = out[:-1]+')'
+    return out
 '''
 ___________________________________________________________
 ___________________Secondary functions_____________________
@@ -231,8 +254,8 @@ creation_tables()
 #see_item_bought('1')
 
 
-conn.close()
-print('Database closed successfully')
+#conn.close()
+#print('Database closed successfully')
 
 
 
