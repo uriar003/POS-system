@@ -1,0 +1,122 @@
+#can use this to grab hex color code instead of rgb
+#:import utils kivy.utils
+
+#applies similar properties to all buttons
+#<Button>
+  #font_size:28
+  #background_normal: ''
+  #divide by 255 if you have actual RGB values
+  #background_color:(13/255,32/255,64/255,0.5)
+
+<frontPage>
+    #if we want to have a user and password input
+    #user:user
+    #password: password
+
+    #create an embedded box
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width,root.height
+
+        padding: 10
+        #adds spacing between buttons
+        spacing: 7
+
+        Label:
+            text: "POS System Starting Screen"
+            font_size: 30
+
+            #adding colors to Labels
+            background_color:(153/255,145/255,146/255,0.5)
+            canvas.before:
+                Color:
+                    rgba: self.background_color
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            #Text Properties
+            #color: (125/255,105/255,99/255,1)
+            bold: True
+            italic: True
+            outline_color:(0,0,0)
+            outline_width: 2
+
+        Button:
+            text: "Log In"
+            font_size:22
+
+            pos_hint:{'center_x':0.50}
+            #font_color:(0,1,1,1)
+            size_hint_y:None
+            #size_hint:(None,None)
+            height:80
+            #width: 250
+            background_normal: ''
+            #divide by 255 if you have actual RGB values
+            background_color: (41/255,75/255,150/255,0.5)
+
+            bold: True
+            outline_color:(0,0,0)
+            outline_width: 2
+
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.transition.duration = 1
+                root.manager.current = 'login'
+
+        Button:
+            text: "Log In As Guest"
+            font_size:22
+
+            pos_hint:{'center_x':0.50}
+            #font_color:(0,1,1,1)
+            size_hint_y:None
+            #size_hint:(None,None)
+            height:80
+            #width: 250
+            background_normal: ''
+            #divide by 255 if you have actual RGB values
+            background_color: (41/255,75/255,150/255,0.5)
+
+            bold: True
+            outline_color:(0,0,0)
+            outline_width: 2
+
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.transition.duration = 1
+                root.manager.current = 'main'
+
+    #main grid
+    #GridLayout:
+        #cols:1
+        #sets size of grid to the entire page
+        #size: root.width, root.height
+
+        #imbedded grid (second grid)
+        #GridLayout:
+            #cols:2
+
+            #Label:
+                #text: "POS System"
+                #font_size: 30
+
+            #TextInput:
+                #id: user
+                #multiline:False
+
+        #Button:
+            #text: "Click Here to Begin"
+            #font_size:28
+            #font_color:(0,1,1,1)
+
+            #size_hint_y:None
+            #size_hint_y:None
+            #height:130
+            #on_press: root.press()
+            #background_normal: ''
+            #divide by 255 if you have actual RGB values
+            #background_color: (41/255,75/255,150/255,0.5)
+
+            #same color as the one above
+            #background_color:utils.get_color_from_hex('#294b96')

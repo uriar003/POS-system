@@ -1,0 +1,219 @@
+#can use this to grab hex color code instead of rgb
+#:import utils kivy.utils
+
+<mainPOS>
+
+    #create an embedded box
+    BoxLayout:
+        orientation:"vertical"
+        size:root.width,root.height
+        padding: 5
+
+        BoxLayout:
+            orientation:"horizontal"
+            size_hint:(1,None)
+            height:30
+
+            pos_hint:{'center_x':0.5}
+
+            Button:
+                text:"Home"
+                font_size:12
+
+                size_hint:(None,None)
+                height:25
+
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
+
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.transition.duration = 1
+                    root.manager.current = 'front'
+
+            Button:
+                text:"Account"
+                font_size:12
+
+                size_hint:(None,None)
+                height:25
+
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
+
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.transition.duration = 1
+                    root.manager.current = 'account'
+
+            Button:
+                text:"Reports"
+                font_size:12
+
+                size_hint:(None,None)
+                height:25
+
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
+
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.transition.duration = 1
+                    root.manager.current = 'reports'
+
+            Label:
+                text:" "
+
+                size_hint:(1,None)
+                height:25
+                width: 500
+
+                background_normal:""
+                #background_color:(87/255,87/255,94/255,1)
+                canvas.before:
+                    Color:
+                        rgba: 87/255,87/255,94/255,1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+
+            Button:
+                text:"Shopping Cart"
+                font_size:12
+
+                size_hint:(None,None)
+                height:25
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
+
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.transition.duration = 1
+                    root.manager.current = 'cart'
+
+            Button:
+                text:"Log Out"
+                font_size:12
+
+                size_hint:(None,None)
+                height:25
+
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
+
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.transition.duration = 1
+                    root.manager.current = 'front'
+
+        BoxLayout:
+            orientation: "horizontal"
+            size:root.width,root.height
+
+            Label:
+                text:"Item List Area"
+                font_size: 30
+
+                size_hint_x:None
+                width:550
+
+            BoxLayout:
+                orientation:"vertical"
+                size:root.width,root.height
+                padding: 10
+                spacing: 2
+
+                Label:
+                    text:"Shopping Cart Title"
+                    font_size:15
+
+                    size_hint_y:None
+                    height:20
+
+                    background_normal:""
+                    #background_color:(87/255,87/255,94/255,1)
+                    canvas.before:
+                        Color:
+                            rgba: 87/255,87/255,94/255,1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                Label:
+                    text:"Shopping List Area"
+                    font_size:15
+
+                    size_hint_y:None
+                    height:300
+
+                    background_normal:""
+                    #background_color:(87/255,87/255,94/255,1)
+                    canvas.before:
+                        Color:
+                            rgba: 87/255,87/255,94/255,1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                Label:
+                    text:"Sales Tax"
+                    font_size:15
+
+                    size_hint_y:None
+                    height:20
+
+                    background_normal:""
+                    #background_color:(87/255,87/255,94/255,1)
+                    canvas.before:
+                        Color:
+                            rgba: 87/255,87/255,94/255,1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                Label:
+                    text:"Total"
+                    font_size:15
+
+                    size_hint_y:None
+                    height:20
+
+                    background_normal:""
+                    #background_color:(87/255,87/255,94/255,1)
+                    canvas.before:
+                        Color:
+                            rgba: 87/255,87/255,94/255,1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
+
+                #clear/go to shopping cart buttons
+                BoxLayout:
+                    orientation: "horizontal"
+                    size_hint:(1,None)
+                    height:30
+
+                    pos_hint:{'center_x':0.5}
+
+                    Button:
+                        text:"Clear Cart"
+                        font_size:12
+
+                        size_hint:(1,None)
+                        height:25
+                        background_normal:""
+                        background_color:(87/255,87/255,94/255,1)
+
+                    Button:
+                        text:"Finish"
+                        font_size:12
+
+                        size_hint:(1,None)
+                        height:25
+                        background_normal:""
+                        background_color:(87/255,87/255,94/255,1)
+
+
+                Label:
+                    text:"Next Page and Search Item Section"
+                    font_size: 12

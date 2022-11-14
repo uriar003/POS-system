@@ -1,0 +1,45 @@
+#can use this to grab hex color code instead of rgb
+#:import utils kivy.utils
+
+<account>
+
+    #create an embedded box
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width,root.height
+
+        Label:
+            text: "Top"
+            font_size:20
+
+        BoxLayout:
+            orientation: "horizontal"
+            Label:
+                text: "Screen One"
+                font_size: 20
+
+                background_color:(153/255,145/255,146/255,0.5)
+                canvas.before:
+                    Color:
+                        rgba: self.background_color
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+
+            Label:
+                text: "Screen Two"
+                font_size: 20
+
+                #size_hint_y:None
+                #height: 500
+
+                background_color:(12/255,50/255,146/255,0.5)
+                canvas.before:
+                    Color:
+                        rgba: self.background_color
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+
+
+
