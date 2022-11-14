@@ -1,41 +1,54 @@
-from kivymd.app import MDApp
+from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.core.window import Window
 
-class wndwLogin(Screen):
+screen_manager = ScreenManager()
+
+Builder.load_file('frontPage.kv')
+Builder.load_file('login.kv')
+Builder.load_file('mainpos.kv')
+Builder.load_file('cart.kv')
+Builder.load_file('reports.kv')
+Builder.load_file('addInv.kv')
+Builder.load_file('account.kv')
+
+class frontPage(Screen):
+    #user=ObjectProperty(None)
+    #password=ObjectProperty(None)
     pass
 
-class wndwPOS(Screen):
+class login(Screen):
     pass
 
-class WindowManager(ScreenManager):
+class mainPOS(Screen):
     pass
 
-kv = Builder.load_file('POSLayout.kv')      # global variable, it must be put here
-                                            # above the MainApp func for some reason
+class cart(Screen):
+    pass
 
-# PostgreSQL Listen at port 5432
-class MainApp(MDApp):
-    # title = "Items List"
+class reports(Screen):
+    pass
+
+class addInv(Screen):
+    pass
+
+class account(Screen):
+    pass
+
+screen_manager.add_widget(frontPage(name="front"))
+screen_manager.add_widget(login(name="login"))
+screen_manager.add_widget(mainPOS(name="main"))
+screen_manager.add_widget(cart(name="cart"))
+screen_manager.add_widget(reports(name="reports"))
+screen_manager.add_widget(addInv(name="invent"))
+screen_manager.add_widget(account(name="account"))
+
+def press(self):
+    pass
+
+class posApp(App):
     def build(self):
-        # set window size before launch
-        Window.size = (1024, 768) # 4:3
-        # Window.size = (1280, 720)   # 16:9 alt
-
-        self.theme_cls.theme_style = "Dark"     # sets color to avoid eye-burning white of kivymd
-        self.theme_cls.primary_palette = "BlueGray"     # ditto above
-
-        sm = ScreenManager()
-
-        # The order of widgets below is important in login loading first
-        sm.add_widget(wndwLogin(name = 'Login'))
-        sm.add_widget(wndwPOS(name = 'POS System'))
-
-        return sm
-
-    def onpress(self, pressed, list_id):
-        print("this is a product")
+        return screen_manager
 
 if __name__ == '__main__':
-    MainApp().run()
+    posApp().run()
