@@ -32,7 +32,7 @@ def creation_tables():
     cursor.execute("""CREATE TABLE IF NOT EXISTS items(
                         ITEM_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                         NAME TEXT NON NULL,
-                        BARECODE TEXT NON NULL,
+                        BARECODE TEXT,
                         PICTURE TEXT,
                         NUMBER INTEGER NON NULL,
                         PRICE INTEGER NON NULL,
@@ -80,6 +80,7 @@ def drop_table(table_name):
 def add_values(table,attributs,values):
     command="INSERT OR REPLACE INTO ",table,attributs,"VALUES",values
     command=''.join(command)
+    print(command)
     conn.execute(command)
     conn.commit()
 
@@ -111,14 +112,17 @@ def SQL_Query_table(table):
     rows= cursor.execute(command).fetchall()
     print(rows)
 
-def format_list(inputs:list)->str:
+def format_list(inputs:list, items=False)->str:
     '''
     Takes in a list, and returns them as a list to be inserted into the 
     '''
     '("1","13/08","12.34","+")'
-    out = '('
+    #out = '('
+    itemTypes = [str, str, str, int, float, str]
+    out = ''
     if type(inputs[0]) != list:
         for cell in inputs:
+
             out += f"'{cell}',"
     else:
         for row in inputs:
@@ -126,7 +130,37 @@ def format_list(inputs:list)->str:
             for cell in row:
                 out += f"'{cell}',"
             out += '),'
-    out = out[:-1]+')'
+    out = out[:-1]#+')'
+    return out
+
+
+# BRUTE FORCE APPROACH, LATER MAKE 1 FUNCTION THAT WORKS FOR ALL**
+def format_items(inputs:list)->str:
+    '''
+    Takes in a list, and returns them as a list to be inserted into the 
+    '''
+    '("1","13/08","12.34","+")'
+    #out = '('
+    itemTypes = [str, str, str, int, float, str]
+    out = ''
+    i = 0
+    if type(inputs[0]) != list:
+        for cell in inputs:
+            if i % 6 in [3,4]:
+                out += f"{cell},"
+            else:
+                out += f"'{cell}',"
+    else:
+        for row in inputs:
+            out += '('
+            for cell in row:
+                if i % 6 in [3,4]:
+                    out += f"{cell},"
+                else:
+                    out += f"'{cell}',"
+                i += 1
+            out = out[:-1]+ '),'
+    out = out[:-1]#+')'
     return out
 '''
 ___________________________________________________________

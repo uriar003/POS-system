@@ -16,11 +16,18 @@ class LoadData:
             else:
                 df = pd.read_excel(io)
             print(df)
-
+            llist = sdb.format_items(df.to_numpy().tolist())
+            print(llist)
+            sdb.add_item(llist)
         else:
             print("Invalid File type")
             return False
+    @staticmethod
+    def print_inventory():
+        rows = sdb.SQL_Query_table("items")
+        print(rows)
+fn = 'vg_data__1.xlsx'
 
-fn = 'vg_data__1.xls'
-
-LoadData.load_inventory(fn)
+#LoadData.print_inventory()
+#LoadData.load_inventory(fn)
+LoadData.print_inventory()
