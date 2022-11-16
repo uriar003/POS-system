@@ -65,10 +65,11 @@ def creation_tables():
                         """)
 
     cursor.execute("""CREATE TABLE IF NOT EXISTS users(
-                USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                USERNAME TEXT NON NULL UNIQUE,
-                PASSWORD TEXT NON NULL)   
-            """)
+                        USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        ADMIN INTEGER NOT NULL,     
+                        USERNAME TEXT NON NULL UNIQUE,
+                        PASSWORD TEXT NON NULL)   
+                        """) # Admin must be 0 or 1. (BOOL)
 
 
 def drop_table(table_name):
