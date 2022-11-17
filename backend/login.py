@@ -76,5 +76,26 @@ class Login:
         return False
             
 
-#Login.create_user("Johnny3", "Password")
-Login.admin_Login("Johnny2", "Passw2ord")
+    @staticmethod
+    def change_password(username:str, password:str, newPassword:str) -> bool:
+        '''
+        Returns true if the password changed.
+        '''
+        if Login.login(username, password):
+            # TODO: If login successful, we change the password.
+            #update_values('orders','total_price','45','CUSTOMER_ID','1')
+            new_p = Login.encrypt_password(newPassword)
+            sdb.update_values("users", "PASSWORD", new_p, "USERNAME", username)
+            print('Password updated.')
+
+
+print(sdb.SQL_Query_table('users'))
+
+#Login.create_user("Johnny3", "Password", True)
+#Login.admin_Login("Johnny2", "Passw2ord")
+
+#x = Login.admin_Login("Johnny3", "Password")
+#print(x)
+Login.change_password("'Johnny3'", "Password", "NewPassword1!")
+print(sdb.SQL_Query_table('users'))
+
