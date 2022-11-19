@@ -32,7 +32,7 @@ def creation_tables():
 
     cursor.execute("""CREATE TABLE IF NOT EXISTS items(
                         ITEM_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                        NAME TEXT NON NULL,
+                        NAME TEXT NON NULL UNIQUE,
                         BARECODE TEXT,
                         PICTURE TEXT,
                         NUMBER INTEGER NON NULL,
@@ -81,16 +81,12 @@ def drop_table(table_name):
 def add_values(table,attributs,values):
     command="INSERT OR REPLACE INTO ",table,attributs,"VALUES",values
     command=''.join(command)
-    print(command)
-    print(command)
     conn.execute(command)
     conn.commit()
 
 def add_values_only(table,attributs,values):
     command="INSERT OR IGNORE INTO ",table,attributs,"VALUES",values
     command=''.join(command)
-    print(command)
-    print(command)
     conn.execute(command)
     conn.commit()
 
@@ -161,7 +157,7 @@ ___________________________________________________________
 
 #items functions
 def add_item(values):
-    add_values_only('items',' (NAME,BARECODE,PICTURE,NUMBER,PRICE,DESCRIPTION) ',values)
+    add_values('items',' (NAME,BARECODE,PICTURE,NUMBER,PRICE,DESCRIPTION) ',values)
 
 def remove_item(value):
     delete_values('items','ITEM_ID',value)
@@ -174,6 +170,13 @@ def change_number_stock(key,value):
 
 def change_price_stock(key,value):
     update_values('stock', 'PRICE', value,'ITEM_ID', key)
+
+
+# S
+def change_number_stock(key,value):
+
+    update_values('items', 'NUMBER', value,'NAME', key)
+
 
 #stock functions
 
