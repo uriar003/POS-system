@@ -1,4 +1,4 @@
-#can use this to grab hex color code instead of rgb
+##can use this to grab hex color code instead of rgb
 #:import utils kivy.utils
 
 <reports>
@@ -6,7 +6,7 @@
     #create an embedded box
     BoxLayout:
         orientation:"vertical"
-        size:root.width,root.height
+        size:self.size #root.width, root.height
         padding: 5
 
         background_color: (10/255, 2/255, 48/255, 1)
@@ -25,7 +25,7 @@
             pos_hint:{'center_x':0.5}
 
             Button:
-                text:"Return"
+                text:"Back"
                 font_size:12
 
                 size_hint:(None,None)
@@ -38,36 +38,6 @@
                     root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
                     root.manager.current = 'main'
-
-            Button:
-                text:"Account"
-                font_size:12
-
-                size_hint:(None,None)
-                height:25
-
-                background_normal:""
-                background_color:(87/255,87/255,94/255,1)
-
-                on_press:
-                    root.manager.transition.direction = 'right'
-                    root.manager.transition.duration = 1
-                    root.manager.current = 'account'
-
-            Button:
-                text:"Reports"
-                font_size:12
-
-                size_hint:(None,None)
-                height:25
-
-                background_normal:""
-                background_color:(87/255,87/255,94/255,1)
-
-                on_press:
-                    root.manager.transition.direction = 'right'
-                    root.manager.transition.duration = 1
-                    root.manager.current = 'reports'
 
             Label:
                 text:" "
@@ -85,41 +55,13 @@
                         size: self.size
                         pos: self.pos
 
-            Button:
-                text:"Shopping Cart"
-                font_size:12
-
-                size_hint:(None,None)
-                height:25
-                background_normal:""
-                background_color:(87/255,87/255,94/255,1)
-
-                on_press:
-                    root.manager.transition.direction = 'right'
-                    root.manager.transition.duration = 1
-                    root.manager.current = 'cart'
-
-            Button:
-                text:"Log Out"
-                font_size:12
-
-                size_hint:(None,None)
-                height:25
-
-                background_normal:""
-                background_color:(87/255,87/255,94/255,1)
-
-                on_press:
-                    root.manager.transition.direction = 'right'
-                    root.manager.transition.duration = 1
-                    root.manager.current = 'front'
-
 #testing the grid layout
         BoxLayout:
             orientation: "horizontal"
             size:root.width,root.height
 
             spacing: 7
+            padding: 2
 
             ScrollView:
                 MDList:
@@ -145,37 +87,14 @@
                         outline_color:(1,0,0)
                         outline_width: 2
 
+            Label:
+                text:"Other List Here"
+                font_size: 18
 
-    #main grid
-    #GridLayout:
-        #cols:1
-        #sets size of grid to the entire page
-        #size: root.width, root.height
+                size_hint:(2.5,1)
 
-        #imbedded grid (second grid)
-        #GridLayout:
-            #cols:2
-
-            #Label:
-                #text: "POS System"
-                #font_size: 30
-
-            #TextInput:
-                #id: user
-                #multiline:False
-
-        #Button:
-            #text: "Click Here to Begin"
-            #font_size:28
-            #font_color:(0,1,1,1)
-
-            #size_hint_y:None
-            #size_hint_y:None
-            #height:130
-            #on_press: root.press()
-            #background_normal: ''
-            #divide by 255 if you have actual RGB values
-            #background_color: (41/255,75/255,150/255,0.5)
-
-            #same color as the one above
-            #background_color:utils.get_color_from_hex('#294b96')
+        Button:
+            text:"Generate Report"
+            font_size:20
+            pos_hint: {'center_x':.5}
+            size_hint:.35, .15

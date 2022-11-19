@@ -5,41 +5,105 @@
 
     #create an embedded box
     BoxLayout:
-        orientation: "vertical"
-        size: root.width,root.height
+        orientation:"vertical"
+        size:root.width,root.height
+        padding: 5
 
-        Label:
-            text: "Top"
-            font_size:20
+        background_color: (10/255, 2/255, 48/255, 1)
+        canvas.before:
+            Color:
+                rgba: self.background_color
+            Rectangle:
+                size: self.size
+                pos: self.pos
 
         BoxLayout:
+            orientation:"horizontal"
+            size_hint:(1,None)
+            height:30
+
+            pos_hint:{'center_x':0.5}
+
+            Button:
+                text:"Back"
+                font_size:12
+
+                size_hint:(None,None)
+                height:25
+
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
+
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.transition.duration = 1
+                    root.manager.current = 'main'
+
+            Label:
+                text:" "
+
+                size_hint:(1,None)
+                height:25
+                width: 500
+
+                background_normal:""
+                #background_color:(87/255,87/255,94/255,1)
+                canvas.before:
+                    Color:
+                        rgba: 87/255,87/255,94/255,1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+
+#testing the grid layout
+        BoxLayout:
             orientation: "horizontal"
+            size:root.width,root.height
+
+            spacing: 7
+            padding: 2
+
+            ScrollView:
+                MDList:
+                    id: itemlist
+                    OneLineListItem:
+                        text: "Add Item"
+                        text_color: 1,1,0,1
+
+                        # root.onpress refers to the onpress func within class mainPOS
+                        on_release: root.onpress(self, "item1")
+                        background_normal:""
+                        background_color:(47/255,72/255,196/255,1.0)
+                        canvas.before:
+                            Color:
+                                rgba: (12/255,10/255,90/255,1.0)
+                            Rectangle:
+                                size: self.size
+                                pos: self.pos
+                            #Text Properties
+                            #color: (125/255,105/255,150/255,1)
+                        bold: True
+                        italic: True
+                        outline_color:(1,0,0)
+                        outline_width: 2
+
             Label:
-                text: "Screen One"
-                font_size: 20
+                text:"Other List Here"
+                font_size: 18
 
-                background_color:(153/255,145/255,146/255,0.5)
-                canvas.before:
-                    Color:
-                        rgba: self.background_color
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
+                size_hint:(2.5,1)
 
-            Label:
-                text: "Screen Two"
-                font_size: 20
+                BoxLayout:
+                    orientation: "horizontal"
+                    #size:root.width,root.height
+                    size_hint:(0.5,0.5)
+                    pos_hint:{'center_x':0.5}
 
-                #size_hint_y:None
-                #height: 500
+                    Button:
+                        text:"Generate Report"
+                        font_size:12
 
-                background_color:(12/255,50/255,146/255,0.5)
-                canvas.before:
-                    Color:
-                        rgba: self.background_color
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
-
+                        background_normal:""
+                        background_color:(87/255,87/255,94/255,1)
 
 
