@@ -1,6 +1,3 @@
-#can use this to grab hex color code instead of rgb
-#:import utils kivy.utils
-
 <mainPOS>
 
     #create an embedded box
@@ -57,7 +54,7 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 on_press:
-                    root.manager.transition.direction = 'right'
+                    root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
                     root.manager.current = 'account'
 
@@ -72,7 +69,7 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 on_press:
-                    root.manager.transition.direction = 'right'
+                    root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
                     root.manager.current = 'reports'
 
@@ -102,7 +99,7 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 on_press:
-                    root.manager.transition.direction = 'right'
+                    root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
                     root.manager.current = 'cart'
 
@@ -117,7 +114,7 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 on_press:
-                    root.manager.transition.direction = 'right'
+                    root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
                     root.manager.current = 'front'
 
@@ -204,6 +201,8 @@
                             size: self.size
                             pos: self.pos
 
+
+
                 Label:
                     text:"Total"
                     font_size:15
@@ -248,6 +247,11 @@
                         height:50
                         background_normal:""
                         background_color:(87/255,87/255,94/255,1)
+
+                        on_press:
+                            root.manager.transition.direction = 'left'
+                            root.manager.transition.duration = 1
+                            root.manager.current = 'cart'
                 BoxLayout:
                     orientation: "horizontal"
                     size_hint:(1, 0.75)
