@@ -118,5 +118,9 @@ class ProductNode:
     def __str__(self):
         return f"Name :: {self.__name} | Picture :: {self.__picture} | Price  :: {self.__price} | Description :: {self.__description} | Stock :: {self.__stock}"
 
-x = SearchEngine()
-x.user_input()
+
+
+
+# Unnote to test
+#x = SearchEngine()
+#x.user_input()

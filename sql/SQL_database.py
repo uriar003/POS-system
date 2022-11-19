@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from math import isnan
 
 
 '''
@@ -81,8 +82,19 @@ def add_values(table,attributs,values):
     command="INSERT OR REPLACE INTO ",table,attributs,"VALUES",values
     command=''.join(command)
     print(command)
+    print(command)
     conn.execute(command)
     conn.commit()
+
+def add_values_only(table,attributs,values):
+    command="INSERT OR IGNORE INTO ",table,attributs,"VALUES",values
+    command=''.join(command)
+    print(command)
+    print(command)
+    conn.execute(command)
+    conn.commit()
+
+
 
 def update_values(table,attribut,new_value,row,old_value):
     command="UPDATE ", table, " set ", attribut, " = ", new_value, " where ", row, " = ", old_value
@@ -111,54 +123,36 @@ def SQL_Query_table(table):
     command=''.join(command)
     rows= cursor.execute(command).fetchall()
     print(rows)
+    return rows
 
 def format_list(inputs:list, items=False)->str:
     '''
     Takes in a list, and returns them as a list to be inserted into the 
     '''
     '("1","13/08","12.34","+")'
-    out = '('
+    
+    out = " "
     if type(inputs[0]) != list:
+        out += '('
         for cell in inputs:
-            out += f"'{cell}',"
-    else:
-        for row in inputs:
-            out += '('
-            for cell in row:
-                out += f"'{cell}',"
-            out += '),'
-    out = out[:-1]+')'
-    return out
-
-
-# BRUTE FORCE APPROACH, LATER MAKE 1 FUNCTION THAT WORKS FOR ALL**
-def format_items(inputs:list)->str:
-    '''
-    Takes in a list, and returns them as a list to be inserted into the 
-    '''
-    '("1","13/08","12.34","+")'
-    #out = '('
-    itemTypes = [str, str, str, int, float, str]
-    out = ''
-    i = 0
-    if type(inputs[0]) != list:
-        for cell in inputs:
-            if i % 6 in [3,4]:
+            if type(cell) in (float, int) and not isnan(cell):
                 out += f"{cell},"
             else:
                 out += f"'{cell}',"
+        out = out[:-1]+')'
     else:
         for row in inputs:
             out += '('
+            print(row)
             for cell in row:
-                if i % 6 in [3,4]:
+                if type(cell) in (float, int) and not isnan(cell):
                     out += f"{cell},"
                 else:
-                    out += f"'{cell}',"
-                i += 1
+                     out += f"'{cell}',"
             out = out[:-1]+ '),'
-    out = out[:-1]#+')'
+    out = out[:-1]
     return out
+
 '''
 ___________________________________________________________
 ___________________Secondary functions_____________________
@@ -167,7 +161,7 @@ ___________________________________________________________
 
 #items functions
 def add_item(values):
-    add_values('items',' (NAME,BARECODE,PICTURE,NUMBER,PRICE,DESCRIPTION) ',values)
+    add_values_only('items',' (NAME,BARECODE,PICTURE,NUMBER,PRICE,DESCRIPTION) ',values)
 
 def remove_item(value):
     delete_values('items','ITEM_ID',value)
