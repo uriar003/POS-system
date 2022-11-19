@@ -66,26 +66,6 @@
             ScrollView:
                 MDList:
                     id: itemlist
-                    OneLineListItem:
-                        text: "Add Item"
-                        text_color: 1,1,0,1
-
-                        # root.onpress refers to the onpress func within class mainPOS
-                        on_release: root.onpress(self, "item1")
-                        background_normal:""
-                        background_color:(47/255,72/255,196/255,1.0)
-                        canvas.before:
-                            Color:
-                                rgba: (12/255,10/255,90/255,1.0)
-                            Rectangle:
-                                size: self.size
-                                pos: self.pos
-                            #Text Properties
-                            #color: (125/255,105/255,150/255,1)
-                        bold: True
-                        italic: True
-                        outline_color:(1,0,0)
-                        outline_width: 2
 
             Label:
                 text:"Other List Here"
@@ -98,3 +78,5 @@
             font_size:20
             pos_hint: {'center_x':.5}
             size_hint:.35, .15
+
+            on_release: root.generatereport(self)
