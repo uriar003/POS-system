@@ -19,6 +19,7 @@ Builder.load_file('reports.kv')
 Builder.load_file('addInv.kv')
 Builder.load_file('account.kv')
 Builder.load_file('searchItem.kv')
+Builder.load_file('helpScreen.kv')
 #Builder.load_file('menu.kv')
 
 class frontPage(Screen):
@@ -96,6 +97,11 @@ class searchItem(Screen):
         item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
         self.ids.itemlist.add_widget(item)
 
+class helpScreen(Screen):
+    def onpress(self, pressed, list_id):
+        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
+        self.ids.itemlist.add_widget(item)
+
 
 class posApp(MDApp):
     def build(self):
@@ -128,6 +134,7 @@ class posApp(MDApp):
         screen_manager.add_widget(addInv(name="invent"))
         screen_manager.add_widget(account(name="account"))
         screen_manager.add_widget(searchItem(name="search"))
+        screen_manager.add_widget(helpScreen(name="help"))
 
         return screen_manager
 
