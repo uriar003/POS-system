@@ -21,16 +21,9 @@ class LoadData:
                 df = pd.read_csv(io)
             else:
                 df = pd.read_excel(io)
-            
-            models = df[["Name","Number"]].to_numpy().tolist()
-
-            
             out = df.to_numpy().tolist()
-            #print(out); print("\n\n\n")
             llist = sdb.format_list(out)
             sdb.add_item(llist)
-            header = ["Name", "Barcode", "Picture", "Number", "Price", "Description"]
-            #df2 = pd.read_sql_query       
         else:
             print("Invalid File type")
             return False
@@ -42,5 +35,7 @@ class LoadData:
 fn = 'vg_data__1.csv'
 ###
 #LoadData.print_inventory()
+header = ["ID", "Name", "Barcode", "Picture", "Number", "Price", "Description"]
 LoadData.load_inventory(fn)
-#LoadData.print_inventory()
+df = pd.DataFrame(LoadData.print_inventory(), columns=header)
+
