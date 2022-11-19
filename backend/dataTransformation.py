@@ -40,7 +40,7 @@ class LoadData:
         rows = sdb.SQL_Query_table("items")
         return rows
 fn = 'vg_data__1.csv'
-
+###
 #LoadData.print_inventory()
 LoadData.load_inventory(fn)
 #LoadData.print_inventory()

@@ -278,7 +278,7 @@ creation_tables()
 #add_customer("('BB', 'CC', 'cc001@csusm.edu', '+336127574678', '123 stAE')")
 #remove_customer('2')
 #see_item_bought('1')
-
+##
 
 #conn.close()
 #print('Database closed successfully')
