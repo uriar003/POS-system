@@ -117,12 +117,9 @@ def format_list(inputs:list, items=False)->str:
     Takes in a list, and returns them as a list to be inserted into the 
     '''
     '("1","13/08","12.34","+")'
-    #out = '('
-    itemTypes = [str, str, str, int, float, str]
-    out = ''
+    out = '('
     if type(inputs[0]) != list:
         for cell in inputs:
-
             out += f"'{cell}',"
     else:
         for row in inputs:
@@ -130,7 +127,7 @@ def format_list(inputs:list, items=False)->str:
             for cell in row:
                 out += f"'{cell}',"
             out += '),'
-    out = out[:-1]#+')'
+    out = out[:-1]+')'
     return out
 
 

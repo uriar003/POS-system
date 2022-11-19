@@ -9,6 +9,7 @@
 '''
 # Test
 import sys
+from enum import IntEnum
 
 # Import the SQL commands
 sys.path.insert(0, "../sql")
@@ -19,6 +20,14 @@ import bcrypt as bc
 #conn = sqlite3.connect('test_db.db')
 #cursor=conn.cursor()
 #print("Database opened successfully")
+
+class Ui(IntEnum):
+    '''Used for the user table as indexes.'''
+    ID = 0
+    ADMIN = 1
+    USERNAME = 2
+    PASSWORD = 3
+
 
 
 class Login:
@@ -34,7 +43,7 @@ class Login:
         if not row_count:
             hp = Login.encrypt_password(password)
             fl = sdb.format_list([int(isAdmin), username, hp])
-            print(fl)
+            #print(fl)
             sdb.add_values("users", "(ADMIN, USERNAME, PASSWORD)", fl)
             print(sdb.cursor.execute('SELECT * FROM users').fetchall())
             return True
@@ -48,7 +57,7 @@ class Login:
         row = sdb.SQL_Query_with_target(username, "SELECT * FROM users WHERE username = ?")
         if len(row):
             user_data = row[0]
-            pass_check = Login.verify_password(password, user_data[-1])
+            pass_check = Login.verify_password(password, user_data[int(Ui.PASSWORD)])
             if pass_check:
                 return True
         return False
@@ -64,7 +73,7 @@ class Login:
     def verify_password(password:str, db_hash:str)-> bool:
         p_bytes = password.encode()
         h_bytes = db_hash.encode()
-        return bc.checkpw(p_bytes, h_bytes) # Returns if the hashe's match.
+        return bc.checkpw(p_bytes, h_bytes) # Returns if the has1he's match.
 
     @staticmethod
     def admin_Login(username:str, password:str) -> bool:
@@ -85,17 +94,23 @@ class Login:
             # TODO: If login successful, we change the password.
             #update_values('orders','total_price','45','CUSTOMER_ID','1')
             new_p = Login.encrypt_password(newPassword)
-            sdb.update_values("users", "PASSWORD", new_p, "USERNAME", username)
+            sdb.update_values("users", "PASSWORD", f"'{new_p}'", "USERNAME", f"'{username}'")
             print('Password updated.')
 
 
 print(sdb.SQL_Query_table('users'))
 
-#Login.create_user("Johnny3", "Password", True)
-#Login.admin_Login("Johnny2", "Passw2ord")
-
-#x = Login.admin_Login("Johnny3", "Password")
-#print(x)
-Login.change_password("'Johnny3'", "Password", "NewPassword1!")
+Login.create_user("Johnny3", "Password", True)
 print(sdb.SQL_Query_table('users'))
 
+x = Login.admin_Login("Johnny2", "Passw2ord")
+print(x)
+
+x = Login.admin_Login("Johnny3", "Password")
+print(x)
+Login.change_password("Johnny3", "Password", "NewPassword1!")
+print(sdb.SQL_Query_table('users'))
+
+print(Login.login("Henrdy", "NewPassword1!"))
+
+#print(type(Ui.ADMIN), int(Ui.ADMIN) == 1)
