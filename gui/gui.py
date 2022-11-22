@@ -15,9 +15,6 @@ import numpy as np
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 #import mysql.connector
 
-#screen_manager = ScreenManager()
-
-
 Builder.load_file('frontPage.kv')
 Builder.load_file('login.kv')
 Builder.load_file('mainPOS.kv')
@@ -28,6 +25,8 @@ Builder.load_file('account.kv')
 Builder.load_file('searchItem.kv')
 Builder.load_file('helpScreen.kv')
 #Builder.load_file('menu.kv')
+
+screen_manager = ScreenManager()
 
 class frontPage(Screen):
     #user=ObjectProperty(None)
@@ -66,31 +65,59 @@ class addInv(Screen):
 #screen_manager.add_widget(account(name="account"))
 
 class mainPOS(Screen):
+    # init is to explicitly initialize the launch instance to make it addressable as 'self'
+    # for functionality and addressing below
+    def __init__(self, **kwargs):
+        super(Screen, self).__init__(**kwargs)
+        # check camera every second or so for a barcode
+        # Clock does not like passing a func with params, so oncvscan is a middle man
+        Clock.schedule_interval(self.oncvscan, 1.0/1.0)
+        self.cam = cv2.VideoCapture(1)
+        self.prior = None      # bool to prevent barcode rescannning
+
     # params for additem are as follows
     # scr is screen for widget (list item to be added)
     # frame is the frame to be scanned for barcodes by decode func
-    def addscanitem(self, scr, success, frame):
+
+    def oncvscan(self, *args):
+        success, frame = self.cam.read()
+        # you don't want camera to add items when off main item screen
+        if(screen_manager.current == "main"):
+            # if barcode was detected
+            # self.prior conditional prevents overscanning a barcode
+            if(len(decode(frame)) > 0 and decode(frame)[0].data != self.prior):
+                print("barcode found")
+                self.prior = decode(frame)[0].data
+                print(decode(frame)[0], self.prior)
+                self.addscanitem(frame)
+            else:
+                print("barcode not found")
+                self.prior = ""     # reset prior check to allow rescan
+
+    def addscanitem(self, frame):
         # note that decode gets ALL barcodes in a frame, but we only want the first one detected
-        barcodes = decode(frame)
-        bdata = barcodes[0].data.decode('utf-8')
-        print("barcode found: adding ", bdata, " to mem loc ", scr.ids.mdlITEMLIST)
+        bdata = decode(frame)[0]
+        bliteral = bdata.data.decode('utf-8')
+        print("Added TYPE:", bdata.type, "| DATA:", bliteral,
+                "| @ mem loc", self.ids.mdlITEMLIST)
+        print(self.ids.mdlITEMLIST)
 
         # placeholder for barcode returning from SQL a list of relevant item properties
-        lstItem = [ "NAME", "$X.XX", "ABC-abc-1234", 2, "genericitem.png" ]
-        
+        mdlItem = [ "NAME", "$X.XX", bliteral, 2, "genericitem.png", bdata.type ]
+
         # create an item to be added to MDList with evident properties
         item = ThreeLineAvatarListItem(
-            text = lstItem[0], 
-            secondary_text = lstItem[1], 
-            tertiary_text = lstItem[2]
+            text = mdlItem[0],              # product name
+            secondary_text = mdlItem[1],    # price
+            tertiary_text = mdlItem[2]      # barcode
             )
+        # attach to the MDList item a self-delete upon click function
+        item.bind(on_release = self.deleteitem)
+
         # add to the MDList item a widget for the icon lest it just be text lines
         # notice 'item' is itself a widget, so widget within a widget
-        item.add_widget(IconLeftWidgetWithoutTouch(icon = str(lstItem[4])))
-
-        # attach to the MDList item a self-delete upon click function
-        item.bind(on_press = mainPOS().deleteitem)
-        scr.ids.mdlITEMLIST.add_widget(item)
+        item.add_widget(IconLeftWidget(icon = str(mdlItem[4])))     # product picture
+        self.ids.mdlITEMLIST.add_widget(item)
 
     # placeholder func as of now, later this will cause a popup where one can add an item by barcode lookup
     def addmanualitem(self, barcode):
@@ -152,7 +179,6 @@ class helpScreen(Screen):
 class posApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
-        self.screen_manager = ScreenManager()
 
         #define data base stuff
         #mydb = mysql.connector.connect(
@@ -172,35 +198,17 @@ class posApp(MDApp):
         #for db in c:
             #print(db)
 
-        self.screen_manager.add_widget(frontPage(name="front"))
-        self.screen_manager.add_widget(login(name="login"))
-        self.screen_manager.add_widget(mainPOS(name="main"))
-        self.screen_manager.add_widget(cart(name="cart"))
-        self.screen_manager.add_widget(reports(name="reports"))
-        self.screen_manager.add_widget(addInv(name="invent"))
-        self.screen_manager.add_widget(account(name="account"))
-        self.screen_manager.add_widget(searchItem(name="search"))
-        self.screen_manager.add_widget(helpScreen(name="help"))
+        screen_manager.add_widget(frontPage(name="front"))
+        screen_manager.add_widget(login(name="login"))
+        screen_manager.add_widget(mainPOS(name="main"))
+        screen_manager.add_widget(cart(name="cart"))
+        screen_manager.add_widget(reports(name="reports"))
+        screen_manager.add_widget(addInv(name="invent"))
+        screen_manager.add_widget(account(name="account"))
+        screen_manager.add_widget(searchItem(name="search"))
+        screen_manager.add_widget(helpScreen(name="help"))
 
-        # check camera every second or so for a barcode
-        # Clock does not like passing a func with params, so oncvscan is a middle man
-        Clock.schedule_interval(self.oncvscan, 1.0/1.0)
-        self.cam = cv2.VideoCapture(1)
-
-        return self.screen_manager
-
-    def oncvscan(self, *args):
-        scr = self.screen_manager.get_screen("main")
-        success, frame = self.cam.read()
-
-        # you don't want camera to add items when off main item screen
-        if(self.screen_manager.current == "main"):
-            # if barcode was detected
-            if(len(decode(frame)) > 0):
-                print("barcode found")
-                mainPOS().addscanitem(scr, success, frame)
-            else:
-                print("barcode not found")
+        return screen_manager
 
 if __name__ == '__main__':
     posApp().run()
