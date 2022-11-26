@@ -1,5 +1,4 @@
 <mainPOS>
-
     #create an embedded box
     BoxLayout:
         orientation:"vertical"
@@ -114,7 +113,7 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 on_press:
-                    root.manager.transition.direction = 'left'
+                    root.manager.transition.direction = 'up'
                     root.manager.transition.duration = 1
                     root.manager.current = 'front'
 
@@ -151,8 +150,7 @@
                             size: self.size
                             pos: self.pos
 
-                Label:
-                    text:"Shopping List Area"
+                ScrollView:
                     font_size:15
 
                     size_hint_y:None
@@ -166,9 +164,12 @@
                         Rectangle:
                             size: self.size
                             pos: self.pos
+                    MDList:
+                        id: mdlSUMMARY
 
                 Label:
-                    text:"Sales Tax"
+                    id: lblstax
+                    text:"Sales Tax: $0.00"
                     font_size:15
 
                     size_hint_y:None
@@ -183,10 +184,26 @@
                             size: self.size
                             pos: self.pos
 
+                Label:
+                    id: lblsubtotal
+                    text: "Sub Total: $0.00"
+                    font_size:15
 
+                    size_hint_y:None
+                    height:20
+
+                    background_normal:""
+                    #background_color:(87/255,87/255,94/255,1)
+                    canvas.before:
+                        Color:
+                            rgba: 87/255,87/255,94/255,1
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
 
                 Label:
-                    text:"Total"
+                    id: lbltotal
+                    text: "Total: $0.00"
                     font_size:15
 
                     size_hint_y:None

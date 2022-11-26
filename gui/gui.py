@@ -1,21 +1,25 @@
 from functools import partial
 
+
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.label import Label
 from kivy.uix.image import Image
+from kivy.uix.popup import Popup
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
+from kivymd.uix.datatables import MDDataTable
+from kivy.metrics import dp #display pixels
 
 from kivymd.app import MDApp
 from kivymd.uix.list import *
 
-from kivymd.uix.datatables import MDDataTable
-from kivy.metrics import dp #display pixels
 import sqlite3
-
 import cv2                          # OpenCV is under Apache License 2.0, so it is free to use commercially
 import numpy as np
+import re
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 #import mysql.connector
 
@@ -31,6 +35,20 @@ Builder.load_file('helpScreen.kv')
 #Builder.load_file('menu.kv')
 
 screen_manager = ScreenManager()
+
+# figures as of now are based on San Diego county
+# there is A LOT that goes into sales tax, hoping the SQL db provides this info
+state_tax = 0.06
+county_tax = 0.0025
+city_tax = 0.00
+special_sales_tax = 0.015
+value_added_tax = 0.00
+currency_type = "$"
+
+combined_sales_tax = state_tax + county_tax + city_tax + special_sales_tax + value_added_tax
+
+# list to manage summary items amt list on the right above the sales totals
+internal_itemlist = []
 
 class frontPage(Screen):
     #user=ObjectProperty(None)
@@ -75,25 +93,23 @@ class mainPOS(Screen):
         super(Screen, self).__init__(**kwargs)
         # check camera every second or so for a barcode
         # Clock does not like passing a func with params, so oncvscan is a middle man
-        Clock.schedule_interval(self.oncvscan, 1.0/1.0)
+        Clock.schedule_interval(self.oncvscan, 1.0/2.0)
         self.cam = cv2.VideoCapture(1)
-        self.prior = None      # bool to prevent barcode rescannning
+        self.prior = None      # bool to prevent barcode over-rescanning
 
-    # params for additem are as follows
-    # scr is screen for widget (list item to be added)
     # frame is the frame to be scanned for barcodes by decode func
-
     def oncvscan(self, *args):
         success, frame = self.cam.read()
         # you don't want camera to add items when off main item screen
         if(screen_manager.current == "main"):
-            # if barcode was detected
-            # self.prior conditional prevents overscanning a barcode
-            if(len(decode(frame)) > 0 and decode(frame)[0].data != self.prior):
-                print("barcode found")
-                self.prior = decode(frame)[0].data
-                print(decode(frame)[0], self.prior)
-                self.addscanitem(frame)
+            # if barcode was detected | self.prior conditional prevents overscanning a barcode
+            if(len(decode(frame)) > 0):
+                if(decode(frame)[0].data != self.prior):
+                    print("barcode found")
+                    self.prior = decode(frame)[0].data
+                    self.addscanitem(frame)
+                else:
+                    print("Repeated barcode scan! Briefly remove from camera and scan again.")
             else:
                 print("barcode not found")
                 self.prior = ""     # reset prior check to allow rescan
@@ -107,48 +123,95 @@ class mainPOS(Screen):
         print(self.ids.mdlITEMLIST)
 
         # placeholder for barcode returning from SQL a list of relevant item properties
-        mdlItem = [ "NAME", "$X.XX", bliteral, 2, "genericitem.png", bdata.type ]
+        # params: Item_id, Picture, Number_in_stock, Price, Description, barcode, current num in cart
+        SQLitem = [ "NAME", "genericitem.png", 7, 2.55, "Nintendo", bliteral, 1 ]
+        self.updatesummary(bliteral, SQLitem, True)
 
         # create an item to be added to MDList with evident properties
-        item = ThreeLineAvatarListItem(
-            text = mdlItem[0],              # product name
-            secondary_text = mdlItem[1],    # price
-            tertiary_text = mdlItem[2]      # barcode
+        mdlitem = ThreeLineAvatarListItem(
+            text = str(SQLitem[0]),              # product name
+            secondary_text = str(SQLitem[3]),    # price
+            tertiary_text = str(SQLitem[5])      # barcode
             )
-        # attach to the MDList item a self-delete upon click function
-        item.bind(on_release = self.deleteitem)
+        
 
         # add to the MDList item a widget for the icon lest it just be text lines
-        # notice 'item' is itself a widget, so widget within a widget
-        item.add_widget(IconLeftWidget(icon = str(mdlItem[4])))     # product picture
-        self.ids.mdlITEMLIST.add_widget(item)
+        mdlitem.add_widget(IconLeftWidget(icon = str(SQLitem[4])))     # product picture        
+        # attach to the MDList item a self-delete upon click function
+        mdlitem.bind(on_release = self.deleteitem)
 
-    # placeholder func as of now, later this will cause a popup where one can add an item by barcode lookup
-    def addmanualitem(self, barcode):
-        # some code here to query SQL db, giving it barcode and 
-        # returning name, price, barcode, amount to purchase, icon
+        newtotal = float(re.search("(\d+\.\d\d)", self.ids.lblsubtotal.text).group())
+        newtotal += SQLitem[3]      # subtotal + new added item, used as basis for other cost calculations
 
-        # hypothetical returned data example from SQL query
-        lstItem = [ "NAME", "$X.XX", "ABC-abc-1234", 2, "genericitem.png" ]
+        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(newtotal * combined_sales_tax)
+        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(newtotal)
+        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(newtotal + (newtotal * combined_sales_tax))
+        self.ids.mdlITEMLIST.add_widget(mdlitem)
 
-        self.item = ThreeLineAvatarListItem(
-            text = lstItem[0], 
-            secondary_text = lstItem[1],
-            tertiary_text = lstItem[2]
-            )
-        self.item.add_widget(IconLeftWidgetWithoutTouch(icon = str(lstItem[4])))
-        self.ids.mdlITEMLIST.add_widget(self.item)
-    
-    # function to self delete MDList item upon click
-    # the button passes itself (obj) as arg and you want to delete it,
-    #   but the func needs to by invoked via the parent, with parameter being the child (obj) list item
     def deleteitem(self, obj):
+        # clear and rebuild the summary list based on internal list changes
+        for i in internal_itemlist:
+            if(obj.tertiary_text == i[5] and (i[6] > 1)):
+                i[6] -= 1
+                self.updatesummary("filler", internal_itemlist, False)
+                break
+            elif(obj.tertiary_text == i[5] and i[6] == 1):
+                internal_itemlist.remove(i)
+                self.updatesummary("filler", internal_itemlist, False)
+                print(internal_itemlist)
+                break
+
         print("deleting item in: ", self, " | ", obj.parent)
         obj.parent.remove_widget(obj)
 
+        negtotal = float(re.search("(\d+\.\d\d)", self.ids.lblsubtotal.text).group())
+        sub = float(re.search("(\d+\.\d\d)", obj.secondary_text).group())
+        negtotal -= sub
+        
+        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(negtotal * combined_sales_tax)
+        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(negtotal)
+        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(negtotal + (negtotal * combined_sales_tax))
+
     def deleteallitems(self, obj):
+        internal_itemlist.clear()
+        self.updatesummary("filler", internal_itemlist, False)
+
         print("deleting all items in", self, " | ", obj)
         self.ids.mdlITEMLIST.clear_widgets()
+        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(0.00)
+        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(0.00)
+        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(0.00)
+
+    def updatesummary(self, bliteral, SQLitem, Add):
+        itemAdded = False
+
+        if(Add == True):
+            # if there aren't any items in cart, unconditionally add an item, this is a unique condition
+            if(len(internal_itemlist) > 0):
+                # params: Item_id, Picture, Number_in_stock, Price, Description, barcode, current num in cart
+                for i in internal_itemlist:
+                    if(bliteral == i[5]):
+                        i[6] += 1
+                        itemAdded = True
+            else:
+                internal_itemlist.append(SQLitem)
+                itemAdded = True
+
+            if itemAdded == False:
+                internal_itemlist.append(SQLitem)
+        elif(Add == False):
+            if(len(internal_itemlist) > 0):
+                # params: Item_id, Picture, Number_in_stock, Price, Description, barcode, current num in cart
+                for i in internal_itemlist:
+                    if(bliteral == i[5]):
+                        i[6] -= 1
+
+        self.ids.mdlSUMMARY.clear_widgets()
+
+        for i in internal_itemlist:
+            self.ids.mdlSUMMARY.add_widget(OneLineListItem(text = str(i[0]) + " x " + str(i[6])))
+
+        print(internal_itemlist)
 
 class reports(Screen):
     def generatereport(self, *args):
@@ -170,20 +233,16 @@ class cart(Screen):
 
 
 class searchItem(Screen):
-    def onpress(self, pressed, list_id):
-        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
-        self.ids.itemlist.add_widget(item)
-
-    def build(self):
-        #define screen
-        screen = Screen()
+    def __init__(self, **kwargs):
+        super(Screen, self).__init__(**kwargs)
 
         #Opening of the database
-        conn = sqlite3.connect(r"C:\Users\jedla\Desktop\SQLtest\POS_database.db") #file path issue  (fixable)
+        # conn = sqlite3.connect(r"C:\Users\jedla\Desktop\SQLtest\POS_database.db") #file path issue  (fixable)
+        conn = sqlite3.connect(r"C:\Users\John\Desktop\441 POS 11-19-2022\POS_database.db")
         #Creation of the cursor ("robot to do database stuff for you")
         cursor = conn.cursor()
         #print("Database opened successfully") #WILL CREATE A NEW FILE IF NOT FOUND
-        
+
         #store row data into records variable before building table
         cursor.execute("SELECT * FROM items")
         conn.commit()
@@ -203,8 +262,8 @@ class searchItem(Screen):
                 check = True,
                 use_pagination = True, #allows for pages, view all rows
                 #default = 5 items per page, can be changed using rows_num
-                
-                
+
+
             #Manually insert requested columns
                 column_data = [
                     ("ITEM_ID", dp(30)),
@@ -225,7 +284,6 @@ class searchItem(Screen):
         table.bind(on_row_press=self.row_checked)
 
         self.add_widget(table)
-        return screen
 
     #Function for check presses
     def checked(self,instance_table, current_row):
@@ -234,10 +292,9 @@ class searchItem(Screen):
     def row_checked(self, instance_table, instance_row):
         print(instance_table, instance_row) #testing function, passes object on click
 
-    def on_enter(self):
-        self.build()
-
-    
+    def onpress(self, pressed, list_id):
+        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
+        self.ids.itemlist.add_widget(item)
 
 class helpScreen(Screen):
     def onpress(self, pressed, list_id):
