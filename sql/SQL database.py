@@ -286,6 +286,17 @@ def qr_code_item(qr_code):
     SQL_Query_with_target(qr_code, command)
 
 
+# Temp Functions
+def createOrder():
+    '''
+    Creates an order with random information.
+    '''
+    ir = 9 #1-9 are the items index ranges in the test DB
+
+
+
+
+
 creation_tables()
 # SQL_Query_with_target('Banana',"SELECT item_id, name, barecode, picture, number, price, description FROM items WHERE name = ?")
 # add_values('orders','(customer_id,date,total_price,statut)','("1","13/08","12.34","+")')

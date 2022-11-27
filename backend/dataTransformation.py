@@ -7,6 +7,21 @@ import SQL_database as sdb
 
 
 class LoadData:
+    
+    @staticmethod
+    def export_template(fileloc:str=""):
+        '''
+        Exports a template that can be used for the format of uploading inventory.
+        
+        Parameters:
+            we should know the file location of where to save this data...
+
+        '''
+        header = ["Name", "Barcode", "Picture", "Number", "Price", "Description"]
+        df = pd.DataFrame(columns=header)
+        df.to_csv(fileloc+"TemplateFile.xlsx", index=False)
+
+
     @staticmethod
     def load_inventory(io:str):
         """
@@ -28,10 +43,12 @@ class LoadData:
             df2 = pd.DataFrame(LoadData.print_inventory(), columns=header)
             existingProducts = {prod[0] : prod[1] for prod in df2[['Name', 'Number']].to_numpy()}
             out = df[["Name", "Barcode", "Picture", "Number", "Price", "Description"]].to_numpy().tolist()
+            
             for row in out:
-                # If the product is in the database, update the 
+                # If the product is in the database
                 if existingProducts.get(row[0]):
-                    row[3] += existingProducts[row[0]] # Update the inventory count 
+                    row[3] += existingProducts[row[0]] # Update the inventory count
+                
             llist = sdb.format_list(out)
             sdb.add_item(llist)
             return True
@@ -44,13 +61,37 @@ class LoadData:
         rows = sdb.SQL_Query_table("items")
         return rows
 
+class SQL_Reports:
+    @staticmethod
+    def displayInventory():
+        pass
+
+    @staticmethod
+    def displayProductOrders(prodSku:str):
+        '''
+        This report will take in a Sku, and it will search all orders where the product was sold.
+        '''
+        pass
+
+    @staticmethod
+    def displaySoldProducts():
+        """
+        This one could take in input for a month range...
+        """
+        
+
+
 
 ###
 #LoadData.print_inventory()
 
-fn = 'vg_data__1.csv'
+def run():
+    fn = 'vg_data__1.csv'
 
-header = ["ID", "Name", "Barcode", "Picture", "Number", "Price", "Description"]
-#LoadData.load_inventory(fn)
-#df = pd.DataFrame(LoadData.print_inventory(), columns=header)
-#print(df)
+    header = ["ID", "Name", "Barcode", "Picture", "Number", "Price", "Description"]
+    LoadData.load_inventory(fn)
+    df = pd.DataFrame(LoadData.print_inventory(), columns=header)
+    print(df)
+
+LoadData.export_template()
+

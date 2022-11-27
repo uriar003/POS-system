@@ -265,6 +265,11 @@ def see_item_bought(values):
     SQL_Query_with_target(values,command)
 
 
+def qr_code_item(qr_code):
+    command = "SELECT ITEM_ID, NAME, BARECODE, PICTURE, NUMBER, PRICE, DESCRIPTION FROM items WHERE BARECODE = ?"
+    SQL_Query_with_target(qr_code, command)
+
+
 creation_tables()
 #SQL_Query_with_target('Banana',"SELECT item_id, name, barecode, picture, number, price, description FROM items WHERE name = ?")
 #add_values('orders','(customer_id,date,total_price,statut)','("1","13/08","12.34","+")')
