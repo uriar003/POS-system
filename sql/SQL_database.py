@@ -9,7 +9,7 @@ ___________________________________________________________
 '''
 
 #Opening of the database
-conn = sqlite3.connect('POS_database.db')
+conn = sqlite3.connect('../sql/POS_database.db')
 #Creation of the cursor
 cursor = conn.cursor()
 print("Database opened successfully")
@@ -95,6 +95,7 @@ def add_values_only(table, attributs, values):
 
 def update_values(table, attribut, new_value, row, old_value):
     command = "UPDATE ", table, " set ", attribut, " = ", new_value, " where ", row, " = ", old_value
+
     command = ''.join(command)
     conn.execute(command)
     conn.commit()
@@ -151,7 +152,7 @@ def format_list(inputs: list, items=False) -> str:
                 else:
                     out += f"'{cell}',"
             out = out[:-1] + '),'
-    out = out[:-1]
+        out = out[:-1]
     return out
 
 
@@ -176,16 +177,19 @@ def see_stock():
 
 
 def change_number_stock(key, value):
-    update_values('stock', 'NUMBER', value, 'ITEM_ID', key)
+    update_values('items', 'NUMBER', value, 'ITEM_ID', key)
+
+def change_number_stock_bulk(llist):
+    for cell in llist:
+
+        value = str(cell[0])
+        key = str(cell[1])
+        update_values('items', 'NUMBER', value, 'ITEM_ID', key)
 
 
 def change_price_stock(key, value):
-    update_values('stock', 'PRICE', value, 'ITEM_ID', key)
+    update_values('items', 'PRICE', value, 'ITEM_ID', key)
 
-
-# S
-def change_number_stock(key, value):
-    update_values('items', 'NUMBER', value, 'NAME', key)
 
 
 # stock functions
