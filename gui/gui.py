@@ -22,6 +22,7 @@ import numpy as np
 import re
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 #import mysql.connector
+import os #for file paths
 
 Builder.load_file('frontPage.kv')
 Builder.load_file('login.kv')
@@ -236,9 +237,13 @@ class searchItem(Screen):
     def __init__(self, **kwargs):
         super(Screen, self).__init__(**kwargs)
 
+        #find correct file path
+        path = os.path.dirname(os.path.abspath(__file__))
+        database = os.path.join(path,'POS_database.db')
+
         #Opening of the database
-        # conn = sqlite3.connect(r"C:\Users\jedla\Desktop\SQLtest\POS_database.db") #file path issue  (fixable)
-        conn = sqlite3.connect(r"C:\Users\John\Desktop\441 POS 11-19-2022\POS_database.db")
+        conn = sqlite3.connect(database)
+
         #Creation of the cursor ("robot to do database stuff for you")
         cursor = conn.cursor()
         #print("Database opened successfully") #WILL CREATE A NEW FILE IF NOT FOUND
