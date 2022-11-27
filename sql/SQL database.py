@@ -292,7 +292,7 @@ def createOrder():
     Creates an order with random information.
     '''
     ir = 9 #1-9 are the items index ranges in the test DB
-
+    
 
 
 

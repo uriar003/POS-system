@@ -19,7 +19,7 @@ class LoadData:
         '''
         header = ["Name", "Barcode", "Picture", "Number", "Price", "Description"]
         df = pd.DataFrame(columns=header)
-        df.to_csv(fileloc+"TemplateFile.xlsx", index=False)
+        df.to_excel(fileloc+"TemplateFile.xlsx", index=False)
 
 
     @staticmethod
@@ -34,6 +34,7 @@ class LoadData:
             True is the data was inserted/Updated
             False if it did not.
         """
+        header = ["Name", "Barcode", "Picture", "Number", "Price", "Description"]
         i = io.rfind('.')
         if i != -1 and (io[i+1:] in ['xlsx', 'csv', '.xls']):
             if io[i+1:] == 'csv':
@@ -43,12 +44,18 @@ class LoadData:
             df2 = pd.DataFrame(LoadData.print_inventory(), columns=header)
             existingProducts = {prod[0] : prod[1] for prod in df2[['Name', 'Number']].to_numpy()}
             out = df[["Name", "Barcode", "Picture", "Number", "Price", "Description"]].to_numpy().tolist()
-            
+            existingList = []
+            nonExistingList = []
             for row in out:
                 # If the product is in the database
                 if existingProducts.get(row[0]):
                     row[3] += existingProducts[row[0]] # Update the inventory count
-                
+                    existingList.append(row)
+                else:
+
+                    nonExistingList.append(row)
+            print(existingList)
+            print(nonExistingList)
             llist = sdb.format_list(out)
             sdb.add_item(llist)
             return True
@@ -93,5 +100,5 @@ def run():
     df = pd.DataFrame(LoadData.print_inventory(), columns=header)
     print(df)
 
-LoadData.export_template()
-
+#LoadData.export_template()
+run()
