@@ -32,6 +32,8 @@
                 outline_width: 2
 
             TextInput:
+
+                font_size: 30
                 id: user
                 multiline:False
 
@@ -58,12 +60,13 @@
                 outline_width: 2
 
             TextInput:
+                font_size: 30
                 id: pass
                 password: True
                 multiline:False
 
         Button:
-            text:"Login"
+            text:"Log in"
             font_size:20
             size_hint_y:None
             #size_hint:(None,None)
@@ -79,7 +82,7 @@
             on_press:
                 root.manager.transition.direction = 'right'
                 root.manager.transition.duration = 1
-                root.manager.current = 'front'
+                root.manager.current = app.test(root.ids, "LOGIN")
 
         Button:
             text:"Go Back to Front Page"

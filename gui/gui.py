@@ -22,7 +22,13 @@ import numpy as np
 import re
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 #import mysql.connector
-import os #for file paths
+import os, sys #for file paths
+
+
+sys.path.insert(0, "../sql")
+sys.path.insert(0, "../backend")
+from login import *# ../backend/login.py
+
 
 Builder.load_file('frontPage.kv')
 Builder.load_file('login.kv')
@@ -71,7 +77,17 @@ class frontPage(Screen):
         #return MyLayout()
 
 class login(Screen):
-    pass
+
+    @staticmethod
+    def interact(data, key):
+        if key == "LOGIN":
+            return login.login(data)
+
+    @staticmethod
+    def login(data):
+        username = data['user'].text
+        password = data['pass'].text
+        return Login.login(username, password)
 
 class cart(Screen):
     pass
@@ -94,8 +110,8 @@ class mainPOS(Screen):
         super(Screen, self).__init__(**kwargs)
         # check camera every second or so for a barcode
         # Clock does not like passing a func with params, so oncvscan is a middle man
-        Clock.schedule_interval(self.oncvscan, 1.0/2.0)
-        self.cam = cv2.VideoCapture(1)
+        #Clock.schedule_interval(self.oncvscan, 1.0/2.0)
+        #self.cam = cv2.VideoCapture(1)
         self.prior = None      # bool to prevent barcode over-rescanning
 
     # frame is the frame to be scanned for barcodes by decode func
@@ -341,5 +357,14 @@ class posApp(MDApp):
 
         return screen_manager
 
+
+    def test(self,data, key):
+        # Runs the login function
+        if login.interact(data,key):
+            # If returns true, set the page to go to the POS.
+            print(True)
+            return "main"
+        # Else return nothing to do nothing, possibly later add text saying invalid
+        
 if __name__ == '__main__':
     posApp().run()
