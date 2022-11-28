@@ -98,6 +98,7 @@ class Login:
             print('Password updated.')
 
 
+"""
 print(sdb.SQL_Query_table('users'))
 
 Login.create_user("Johnny3", "Password", True)
@@ -112,5 +113,5 @@ Login.change_password("Johnny3", "Password", "NewPassword1!")
 print(sdb.SQL_Query_table('users'))
 
 print(Login.login("Henrdy", "NewPassword1!"))
-
+"""
 #print(type(Ui.ADMIN), int(Ui.ADMIN) == 1)

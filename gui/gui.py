@@ -23,10 +23,8 @@ import re
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 #import mysql.connector
 import os, sys #for file paths
+from kivylogin import login
 
-
-sys.path.insert(0, "../sql")
-sys.path.insert(0, "../backend")
 from login import *# ../backend/login.py
 
 
@@ -76,18 +74,6 @@ class frontPage(Screen):
     #def build(self):
         #return MyLayout()
 
-class login(Screen):
-
-    @staticmethod
-    def interact(data, key):
-        if key == "LOGIN":
-            return login.login(data)
-
-    @staticmethod
-    def login(data):
-        username = data['user'].text
-        password = data['pass'].text
-        return Login.login(username, password)
 
 class cart(Screen):
     pass
