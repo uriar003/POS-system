@@ -72,6 +72,9 @@ def creation_tables():
                         PASSWORD TEXT NON NULL)   
                         """)  # Admin must be 0 or 1. (BOOL)
 
+# Create an admin user if one doesnt exist
+
+
 #Fonction to drop a table
 def drop_table(table_name):
     command = "DROP TABLE ", table_name
@@ -297,6 +300,8 @@ def createOrder():
     '''
     ir = 9 #1-9 are the items index ranges in the test DB
     
+
+
 
 
 

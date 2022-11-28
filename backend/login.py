@@ -96,6 +96,15 @@ class Login:
             new_p = Login.encrypt_password(newPassword)
             sdb.update_values("users", "PASSWORD", f"'{new_p}'", "USERNAME", f"'{username}'")
             print('Password updated.')
+    @staticmethod
+    def create_admin():
+        # if there is no user in the database create an admin
+        if not len(sdb.SQL_Query_table("users")):
+            Login.create_user("admin", "admin", True)
+
+
+# Creates an admin in case the database is empty.
+Login.create_admin()
 
 
 """

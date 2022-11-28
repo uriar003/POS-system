@@ -16,6 +16,9 @@ import os, sys
 sys.path.insert(0, "../sql")
 sys.path.insert(0, "../backend")
 
+from login import Login as lg # ../backend/login.py
+
+
 class login(Screen):
 
     @staticmethod
@@ -27,4 +30,4 @@ class login(Screen):
     def login(data):
         username = data['user'].text
         password = data['pass'].text
-        return Login.login(username, password)
+        return lg.login(username, password)
