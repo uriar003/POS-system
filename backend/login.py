@@ -76,7 +76,7 @@ class Login:
         return bc.checkpw(p_bytes, h_bytes) # Returns if the has1he's match.
 
     @staticmethod
-    def admin_Login(username:str, password:str) -> bool:
+    def admin_login(username:str, password:str) -> bool:
         isAdmin = sdb.SQL_Query_with_target(username, "SELECT ADMIN FROM users WHERE username = ?")
         if len(isAdmin):
             if isAdmin[0][0] and Login.login(username, password): # If the user is an Admin, and loged in correctly
@@ -96,6 +96,22 @@ class Login:
             new_p = Login.encrypt_password(newPassword)
             sdb.update_values("users", "PASSWORD", f"'{new_p}'", "USERNAME", f"'{username}'")
             print('Password updated.')
+            return True
+        return False
+
+    @staticmethod
+    def change_password_noverify(username:str, newPassword:str) -> bool:
+        '''
+        Returns true if the password changed.
+        '''
+        row = sdb.SQL_Query_with_target(username, "SELECT * FROM users WHERE username = ?")
+        if len(row):
+            new_p = Login.encrypt_password(newPassword)
+            sdb.update_values("users", "PASSWORD", f"'{new_p}'", "USERNAME", f"'{username}'")
+            print('Password updated.')
+            return True
+        return False
+
     @staticmethod
     def create_admin():
         # if there is no user in the database create an admin

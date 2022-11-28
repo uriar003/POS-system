@@ -23,7 +23,7 @@ import re
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 #import mysql.connector
 import os, sys #for file paths
-from kivylogin import login
+from kivylogin import login, helpScreen
 
 
 
@@ -302,10 +302,7 @@ class searchItem(Screen):
         item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
         self.ids.itemlist.add_widget(item)
 
-class helpScreen(Screen):
-    def onpress(self, pressed, list_id):
-        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
-        self.ids.itemlist.add_widget(item)
+
 
 
 class posApp(MDApp):
@@ -343,12 +340,17 @@ class posApp(MDApp):
         return screen_manager
 
 
-    def test(self,data, key):
+    def loginLogic(self,data, key):
         # Runs the login function
-        if login.interact(data,key):
-            # If returns true, set the page to go to the POS.
-            print(True)
-            return "main"
+        if key == "LOGIN":
+            if login.interact(data,key):
+                # If returns true, set the page to go to the POS.
+                print(True)
+                return "main"
+        elif key == "CHANGEPASS":
+            if helpScreen.interact(data, key):
+                print("True")
+                return("login")
         # Else return nothing to do nothing, possibly later add text saying invalid
         
 if __name__ == '__main__':

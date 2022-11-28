@@ -31,3 +31,35 @@ class login(Screen):
         username = data['user'].text
         password = data['pass'].text
         return lg.login(username, password)
+    
+
+        
+    @staticmethod
+    def admin_login(data):
+        username = data['user'].text
+        password = data['pass'].text
+        return lg.admin_login(username, password)
+
+    @staticmethod
+    def change_password_override(data):
+        username = data['user'].text
+        password = data['pass'].text
+        return lg.admin_login(username, password)
+
+
+class helpScreen(Screen):
+    def onpress(self, pressed, list_id):
+        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
+        self.ids.itemlist.add_widget(item)
+
+    @staticmethod
+    def interact(data, key):
+        if key == "CHANGEPASS":
+            return helpScreen.change_password(data)
+        
+    @staticmethod
+    def change_password(data):
+        username = data['user'].text
+        password = data['pass'].text
+        newPassword = data['pass2'].text
+        return lg.change_password(username, password, newPassword)
