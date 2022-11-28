@@ -95,8 +95,8 @@ class mainPOS(Screen):
         super(Screen, self).__init__(**kwargs)
         # check camera every second or so for a barcode
         # Clock does not like passing a func with params, so oncvscan is a middle man
-        #Clock.schedule_interval(self.oncvscan, 1.0/2.0)
-        #self.cam = cv2.VideoCapture(1)
+        Clock.schedule_interval(self.oncvscan, 1.0/2.0)
+        self.cam = cv2.VideoCapture(1)
         self.prior = None      # bool to prevent barcode over-rescanning
 
     # frame is the frame to be scanned for barcodes by decode func
