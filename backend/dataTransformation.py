@@ -11,7 +11,7 @@ class LoadData:
     def export_template(fileloc:str=""):
         '''
         Exports a template that can be used for the format of uploading inventory.
-        
+        `       
         Parameters:
             we should know the file location of where to save this data...
 
