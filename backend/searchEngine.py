@@ -77,6 +77,12 @@ class SearchEngine:
         '''
         return self.df[self.df['NAME'].str.contains(inp)]
 
+    def search_barcode(self, inp:str):
+        '''
+        Given a string, will search the pandas dataframe for the value, followed 
+        '''
+        return self.df[self.df['BARECODE'].str.contains(inp)].to_numpy().tolist()
+
 
     def gen_data(self,df, amount:int=12):
         '''
