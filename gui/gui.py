@@ -23,7 +23,7 @@ import re
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 #import mysql.connector
 import os, sys #for file paths
-from kivylogin import login, helpScreen, adminLogin
+from kivylogin import login, helpScreen, adminLogin, adminMenu
 
 
 
@@ -37,6 +37,7 @@ Builder.load_file('account.kv')
 Builder.load_file('searchItem.kv')
 Builder.load_file('helpScreen.kv')
 Builder.load_file('adminLogin.kv')
+Builder.load_file("adminMenu.kv")
 #Builder.load_file('menu.kv')
 
 screen_manager = ScreenManager()
@@ -338,7 +339,7 @@ class posApp(MDApp):
         screen_manager.add_widget(account(name="account"))
         screen_manager.add_widget(searchItem(name="search"))
         screen_manager.add_widget(helpScreen(name="help"))
-        #screen_manager.add_widget(login(name="help"))
+        screen_manager.add_widget(adminMenu(name="adminMenu"))
 
         return screen_manager
 
@@ -357,8 +358,13 @@ class posApp(MDApp):
         elif key == "ADMINLOGIN":
             if adminLogin.interact(data,key):
                 print(True)
-                return ("main") # Instead become admin page...
+                return ("adminMenu")
+                
+        elif key in ["ADMINCHANGEUSERPASS", "CREATEUSER"]:
+            adminMenu.interact(data,key)
+            return ("adminMenu")
         # Else return nothing to do nothing, possibly later add text saying invalid
+        return "front"
         
 if __name__ == '__main__':
     posApp().run()

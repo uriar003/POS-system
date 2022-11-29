@@ -1,5 +1,5 @@
 #screen where you can log in
-<login>
+<adminMenu>
     #create the outside box layout
     BoxLayout:
         orientation:"vertical"
@@ -66,7 +66,7 @@
                 multiline:False
 
         Button:
-            text:"Log in"
+            text:"Create User"
             font_size:20
             size_hint_y:None
             #size_hint:(None,None)
@@ -80,9 +80,24 @@
             outline_width: 2
 
             on_press:
-                root.manager.transition.direction = 'right'
-                root.manager.transition.duration = 1
-                root.manager.current = app.loginLogic(root.ids, "LOGIN")
+                root.manager.current = app.loginLogic(root.ids, "CREATEUSER")
+
+        Button:
+            text:"Replace Password"
+            font_size:20
+            size_hint_y:None
+            #size_hint:(None,None)
+            height:60
+            background_normal: ''
+            #divide by 255 if you have actual RGB values
+            background_color: (41/255,75/255,150/255,0.5)
+
+            bold: True
+            outline_color:(0,0,0)
+            outline_width: 2
+
+            on_press:
+                root.manager.current = app.loginLogic(root.ids, "ADMINCHANGEUSERPASS") 
 
         Button:
             text:"Go Back to Front Page"
@@ -103,21 +118,3 @@
                 root.manager.transition.duration = 1
                 root.manager.current = 'front'
 
-        Button:
-            text:"Update Password"
-            font_size:20
-            size_hint_y:None
-            #size_hint:(None,None)
-            height:60
-            background_normal: ''
-            #divide by 255 if you have actual RGB values
-            background_color: (41/255,75/255,150/255,0.5)
-
-            bold: True
-            outline_color:(0,0,0)
-            outline_width: 2
-
-            on_press:
-                root.manager.transition.direction = 'left'
-                root.manager.transition.duration = 1
-                root.manager.current = 'help' 

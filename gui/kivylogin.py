@@ -95,3 +95,18 @@ class helpScreen(Screen):
         password = data['pass'].text
         newPassword = data['pass2'].text
         return lg.change_password(username, password, newPassword)
+
+class adminMenu(Screen):
+    @staticmethod
+    def interact(data, key):
+        if key == "ADMINCHANGEUSERPASS":
+            username = data['user'].text
+            password = data['pass'].text
+            lg.change_password_noverify(username, password)
+            print(f"{username}'s password was updated.")
+
+        elif key == "CREATEUSER":
+            username = data['user'].text
+            password = data['pass'].text
+            lg.create_user(username, password)
+            print(f"{username} created.")
