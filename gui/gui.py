@@ -20,7 +20,9 @@ from kivymd.uix.datatables import MDDataTable
 from pathlib import Path
 import os, sys #for file paths
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, "../backend")
 import sql.SQL_database
+
 
 import sqlite3
 import cv2                          # OpenCV is under Apache License 2.0, so it is free to use commercially
@@ -28,6 +30,7 @@ import numpy as np
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 
 from kivylogin import login, helpScreen, adminLogin, adminMenu
+from searchEngine import SearchEngine
 
 Builder.load_file('frontPage.kv')
 Builder.load_file('login.kv')
@@ -84,6 +87,7 @@ class mainPOS(Screen):
         Clock.schedule_interval(self.oncvscan, 1.0/2.0) # schedule oncvscan() to be called twice a second forever
         self.cam = cv2.VideoCapture(1)
         self.prior = None      # bool to prevent barcode over-rescanning
+        self.se = SearchEngine()
 
     # frame is the frame to be scanned for barcodes by decode func
     def oncvscan(self, *args):
@@ -198,12 +202,29 @@ class mainPOS(Screen):
         print("dummy function here, query the SQL then retrieve the generator - then populate ")
         # query is the item i.e. "apple" sent to the SQL search which would \
         # ideally return a list of lists that I can loop through to populate the search list
+        # se is the SearchEngine class from the backend library.
+
+        #results = [
+        #     ["apple", 2.99, "ABC-abc-1234"], 
+        #     ["applet", 89.99, "TUV-abc-4321"], 
+        #     ["application", 204.99, "XYZ-abc-6626"] 
+        #    ]
         
-        results = [
-             ["apple", 2.99, "ABC-abc-1234"], 
-             ["applet", 89.99, "TUV-abc-4321"], 
-             ["application", 204.99, "XYZ-abc-6626"] 
-             ]
+        # Seans code
+        searchedName = "Mario" # Replace this with the value that is searched.
+
+        # I initialized self.se in the __init__ self.se = SearchEngine()
+        searched_obj = self.se.search_product(userInput=searchedName, amount=4)
+        countOfprod = next(searched_obj) # The first item will be the count
+        # So if it's 0, then there are no results.
+        # Otherwise, it'll return up to 4 values per search 
+        listOfList = []
+        for setOfProd in searched_obj: # Loop through and make a list of lists
+            print(setOfProd)
+            listOfList.append(setOfProd)
+        # Since the DB is so small, if we search Mario, only 4 items return   
+        print(listOfList)
+        results = listOfList[0]
 
         # clear to repopulate search results
         self.ids.mdlSEARCHRESULTS.clear_widgets()
