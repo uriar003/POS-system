@@ -23,7 +23,7 @@ import re
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
 #import mysql.connector
 import os, sys #for file paths
-from kivylogin import login, helpScreen
+from kivylogin import login, helpScreen, adminLogin
 
 
 
@@ -36,6 +36,7 @@ Builder.load_file('addInv.kv')
 Builder.load_file('account.kv')
 Builder.load_file('searchItem.kv')
 Builder.load_file('helpScreen.kv')
+Builder.load_file('adminLogin.kv')
 #Builder.load_file('menu.kv')
 
 screen_manager = ScreenManager()
@@ -95,8 +96,8 @@ class mainPOS(Screen):
         super(Screen, self).__init__(**kwargs)
         # check camera every second or so for a barcode
         # Clock does not like passing a func with params, so oncvscan is a middle man
-        Clock.schedule_interval(self.oncvscan, 1.0/2.0)
-        self.cam = cv2.VideoCapture(1)
+        #Clock.schedule_interval(self.oncvscan, 1.0/2.0)
+        #self.cam = cv2.VideoCapture(1)
         self.prior = None      # bool to prevent barcode over-rescanning
 
     # frame is the frame to be scanned for barcodes by decode func
@@ -329,6 +330,7 @@ class posApp(MDApp):
 
         screen_manager.add_widget(frontPage(name="front"))
         screen_manager.add_widget(login(name="login"))
+        screen_manager.add_widget(adminLogin(name="adminLogin"))
         screen_manager.add_widget(mainPOS(name="main"))
         screen_manager.add_widget(cart(name="cart"))
         screen_manager.add_widget(reports(name="reports"))
@@ -336,6 +338,7 @@ class posApp(MDApp):
         screen_manager.add_widget(account(name="account"))
         screen_manager.add_widget(searchItem(name="search"))
         screen_manager.add_widget(helpScreen(name="help"))
+        #screen_manager.add_widget(login(name="help"))
 
         return screen_manager
 
@@ -351,6 +354,10 @@ class posApp(MDApp):
             if helpScreen.interact(data, key):
                 print("True")
                 return("login")
+        elif key == "ADMINLOGIN":
+            if adminLogin.interact(data,key):
+                print(True)
+                return ("main") # Instead become admin page...
         # Else return nothing to do nothing, possibly later add text saying invalid
         
 if __name__ == '__main__':

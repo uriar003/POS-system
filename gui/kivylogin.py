@@ -25,7 +25,15 @@ class login(Screen):
     def interact(data, key):
         if key == "LOGIN":
             return login.login(data)
-
+        elif key == "CHANGEPASS":
+            return login.change_password(data)
+        
+    @staticmethod
+    def change_password(data):
+        username = data['user'].text
+        password = data['pass'].text
+        newPassword = data['pass2'].text
+        return lg.change_password(username, password, newPassword)
     @staticmethod
     def login(data):
         username = data['user'].text
@@ -45,6 +53,30 @@ class login(Screen):
         username = data['user'].text
         password = data['pass'].text
         return lg.admin_login(username, password)
+
+
+
+class adminLogin(Screen):
+
+    @staticmethod
+    def interact(data, key):
+        if key == "ADMINLOGIN":
+            return adminLogin.admin_login(data)
+
+
+    @staticmethod
+    def admin_login(data):
+        username = data['user'].text
+        password = data['pass'].text
+        return lg.admin_login(username, password)
+
+    @staticmethod
+    def change_password_override(data):
+        username = data['user'].text
+        password = data['pass'].text
+        return lg.admin_login(username, password)
+
+
 
 
 class helpScreen(Screen):
