@@ -1,31 +1,33 @@
 from functools import partial
 
-
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.metrics import dp #display pixels
+from kivy.properties import NumericProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from kivymd.uix.datatables import MDDataTable
-from kivy.metrics import dp #display pixels
+from kivy.uix.textinput import TextInput
 
 from kivymd.app import MDApp
 from kivymd.uix.list import *
+from kivymd.uix.datatables import MDDataTable
+
+from pathlib import Path
+import os, sys #for file paths
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import sql.SQL_database
 
 import sqlite3
 import cv2                          # OpenCV is under Apache License 2.0, so it is free to use commercially
 import numpy as np
-import re
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
-#import mysql.connector
-import os, sys #for file paths
+
 from kivylogin import login, helpScreen, adminLogin, adminMenu
-
-
 
 Builder.load_file('frontPage.kv')
 Builder.load_file('login.kv')
@@ -38,12 +40,10 @@ Builder.load_file('searchItem.kv')
 Builder.load_file('helpScreen.kv')
 Builder.load_file('adminLogin.kv')
 Builder.load_file("adminMenu.kv")
-#Builder.load_file('menu.kv')
 
 screen_manager = ScreenManager()
 
-# figures as of now are based on San Diego county
-# there is A LOT that goes into sales tax, hoping the SQL db provides this info
+# Sales Tax factors
 state_tax = 0.06
 county_tax = 0.0025
 city_tax = 0.00
@@ -56,25 +56,20 @@ combined_sales_tax = state_tax + county_tax + city_tax + special_sales_tax + val
 # list to manage summary items amt list on the right above the sales totals
 internal_itemlist = []
 
+class ThreeLineCompactItem(BaseListItem):
+    """A three line list item."""
+
+    _txt_top_pad = NumericProperty("4dp")
+    _txt_bot_pad = NumericProperty("4dp")
+    _height = NumericProperty()
+    _num_lines = 3
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.height = dp(64) if not self._height else self._height
+
 class frontPage(Screen):
-    #user=ObjectProperty(None)
-    #password=ObjectProperty(None)
     pass
-
-
-#class MyLayout(Screen):
-
-    #def selected(self, filename):
-        #try:
-            # return file location
-            #print(filename[0])
-        #except:
-            #pass
-
-#class FileChooser(MDApp):
-    #def build(self):
-        #return MyLayout()
-
 
 class cart(Screen):
     pass
@@ -82,23 +77,12 @@ class cart(Screen):
 class addInv(Screen):
     pass
 
-#screen_manager.add_widget(frontPage(name="front"))
-#screen_manager.add_widget(login(name="login"))
-#screen_manager.add_widget(mainPOS(name="main"))
-#screen_manager.add_widget(cart(name="cart"))
-#screen_manager.add_widget(reports(name="reports"))
-#screen_manager.add_widget(addInv(name="invent"))
-#screen_manager.add_widget(account(name="account"))
-
 class mainPOS(Screen):
-    # init is to explicitly initialize the launch instance to make it addressable as 'self'
-    # for functionality and addressing below
     def __init__(self, **kwargs):
         super(Screen, self).__init__(**kwargs)
-        # check camera every second or so for a barcode
-        # Clock does not like passing a func with params, so oncvscan is a middle man
-        #Clock.schedule_interval(self.oncvscan, 1.0/2.0)
-        #self.cam = cv2.VideoCapture(1)
+        
+        Clock.schedule_interval(self.oncvscan, 1.0/2.0) # schedule oncvscan() to be called twice a second forever
+        self.cam = cv2.VideoCapture(1)
         self.prior = None      # bool to prevent barcode over-rescanning
 
     # frame is the frame to be scanned for barcodes by decode func
@@ -122,80 +106,57 @@ class mainPOS(Screen):
         # note that decode gets ALL barcodes in a frame, but we only want the first one detected
         bdata = decode(frame)[0]
         bliteral = bdata.data.decode('utf-8')
-        print("Added TYPE:", bdata.type, "| DATA:", bliteral,
-                "| @ mem loc", self.ids.mdlITEMLIST)
-        print(self.ids.mdlITEMLIST)
+        print("Adding TYPE:", bdata.type, "| DATA:", bliteral)
 
         # placeholder for barcode returning from SQL a list of relevant item properties
         # params: Item_id, Picture, Number_in_stock, Price, Description, barcode, current num in cart
-        SQLitem = [ "NAME", "genericitem.png", 7, 2.55, "Nintendo", bliteral, 1 ]
-        self.updatesummary(bliteral, SQLitem, True)
+        # SQLitem = [ "ITEM", "genericitem.png", 7, 2.55, "Nintendo", bliteral, 1 ]
+        SQLitem = [
+            "ITEM_ID",      # item id
+            "NAME",         # item name
+            bliteral,       # barcode data
+            "soup.png",     # picture
+            7,              # in stock amount
+            2.99,           # price * current amt in amount
+            "description here",     # description
+            1               # counter for current amount in cart
+        ]
+        self.update_cart(SQLitem, True)
 
-        # create an item to be added to MDList with evident properties
-        mdlitem = ThreeLineAvatarListItem(
-            text = str(SQLitem[0]),              # product name
-            secondary_text = str(SQLitem[3]),    # price
-            tertiary_text = str(SQLitem[5])      # barcode
-            )
-        
+    def delete_cartitem(self, obj):
 
-        # add to the MDList item a widget for the icon lest it just be text lines
-        mdlitem.add_widget(IconLeftWidget(icon = str(SQLitem[4])))     # product picture        
-        # attach to the MDList item a self-delete upon click function
-        mdlitem.bind(on_release = self.deleteitem)
+        subtotal = 0.00
 
-        newtotal = float(re.search("(\d+\.\d\d)", self.ids.lblsubtotal.text).group())
-        newtotal += SQLitem[3]      # subtotal + new added item, used as basis for other cost calculations
-
-        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(newtotal * combined_sales_tax)
-        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(newtotal)
-        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(newtotal + (newtotal * combined_sales_tax))
-        self.ids.mdlITEMLIST.add_widget(mdlitem)
-
-    def deleteitem(self, obj):
-        # clear and rebuild the summary list based on internal list changes
         for i in internal_itemlist:
-            if(obj.tertiary_text == i[5] and (i[6] > 1)):
-                i[6] -= 1
-                self.updatesummary("filler", internal_itemlist, False)
+            if(obj.secondary_text == i[2] and (i[7] > 1)):
+                print("subtracting", obj)
                 break
-            elif(obj.tertiary_text == i[5] and i[6] == 1):
+            elif(obj.secondary_text == i[2] and (i[7] == 1)):
+                print("deleting", obj)
                 internal_itemlist.remove(i)
-                self.updatesummary("filler", internal_itemlist, False)
-                print(internal_itemlist)
                 break
 
-        print("deleting item in: ", self, " | ", obj.parent)
-        obj.parent.remove_widget(obj)
+        self.update_cart(i, False)
 
-        negtotal = float(re.search("(\d+\.\d\d)", self.ids.lblsubtotal.text).group())
-        sub = float(re.search("(\d+\.\d\d)", obj.secondary_text).group())
-        negtotal -= sub
-        
-        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(negtotal * combined_sales_tax)
-        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(negtotal)
-        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(negtotal + (negtotal * combined_sales_tax))
-
-    def deleteallitems(self, obj):
+    def delete_cartall(self, obj):
         internal_itemlist.clear()
-        self.updatesummary("filler", internal_itemlist, False)
+        self.update_cart(internal_itemlist, False)
 
         print("deleting all items in", self, " | ", obj)
-        self.ids.mdlITEMLIST.clear_widgets()
         self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(0.00)
         self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(0.00)
         self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(0.00)
 
-    def updatesummary(self, bliteral, SQLitem, Add):
+    def update_cart(self, SQLitem, Add):
         itemAdded = False
 
         if(Add == True):
-            # if there aren't any items in cart, unconditionally add an item, this is a unique condition
+            # if there aren't any items in cart, unconditionally add an item, this is an edge case
             if(len(internal_itemlist) > 0):
-                # params: Item_id, Picture, Number_in_stock, Price, Description, barcode, current num in cart
                 for i in internal_itemlist:
-                    if(bliteral == i[5]):
-                        i[6] += 1
+                    # if barcode is already in list, add to existing elem count
+                    if(SQLitem[2] == i[2]):
+                        i[7] += 1
                         itemAdded = True
             else:
                 internal_itemlist.append(SQLitem)
@@ -207,15 +168,57 @@ class mainPOS(Screen):
             if(len(internal_itemlist) > 0):
                 # params: Item_id, Picture, Number_in_stock, Price, Description, barcode, current num in cart
                 for i in internal_itemlist:
-                    if(bliteral == i[5]):
-                        i[6] -= 1
+                    if(SQLitem[2] == i[2]):
+                        if(i[7] > 0):
+                            i[7] -= 1
+                        else:
+                            internal_itemlist.remove(i)
 
-        self.ids.mdlSUMMARY.clear_widgets()
+        self.ids.mdlCART.clear_widgets()
+        subtotal = 0.00
 
         for i in internal_itemlist:
-            self.ids.mdlSUMMARY.add_widget(OneLineListItem(text = str(i[0]) + " x " + str(i[6])))
+            # create an item to be added to MDList with evident properties
+            mdlitem = ThreeLineCompactItem(
+                text = str(i[1] + " X " + str(i[7])),       # product name
+                secondary_text = i[2],                      # barcode (I need this to index)
+                tertiary_text = str(i[5])                   # price
+                )
+            mdlitem.bind(on_release = self.delete_cartitem)
+            self.ids.mdlCART.add_widget(mdlitem)
+            subtotal += i[5] * i[7]
+
+        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(subtotal * combined_sales_tax)
+        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(subtotal)
+        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(subtotal + (subtotal * combined_sales_tax))
 
         print(internal_itemlist)
+
+    def on_mdquery(self, query):
+        print("dummy function here, query the SQL then retrieve the generator - then populate ")
+        # query is the item i.e. "apple" sent to the SQL search which would \
+        # ideally return a list of lists that I can loop through to populate the search list
+        
+        results = [
+             ["apple", 2.99, "ABC-abc-1234"], 
+             ["applet", 89.99, "TUV-abc-4321"], 
+             ["application", 204.99, "XYZ-abc-6626"] 
+             ]
+
+        # clear to repopulate search results
+        self.ids.mdlSEARCHRESULTS.clear_widgets()
+
+        for r in results:
+            rl = ThreeLineAvatarListItem(
+                text = str(r[0]),              # product name
+                secondary_text = str(r[1]),    # price
+                tertiary_text = str(r[2])      # barcode
+                )
+
+            self.ids.mdlSEARCHRESULTS.add_widget(rl)
+
+        # as of now I just want it to work as proof of concept, so no automatic search updating mid-typing,
+        #       only update results from SQL searcher upon button press
 
 class reports(Screen):
     def generatereport(self, *args):
@@ -224,13 +227,13 @@ class reports(Screen):
         self.ids.itemlist.add_widget(item)
 
 class account(Screen):
-    def onpress(self, pressed, list_id):
+    def on_press(self, pressed, list_id):
         item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
        #item.add_widget(IconLeftWidget(icon="soup.png"))
         self.ids.itemlist.add_widget(item)
 
 class cart(Screen):
-    def onpress(self, pressed, list_id):
+    def on_press(self, pressed, list_id):
         item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
        #item.add_widget(IconLeftWidget(icon="soup.png"))
         self.ids.itemlist.add_widget(item)
@@ -300,7 +303,7 @@ class searchItem(Screen):
     def row_checked(self, instance_table, instance_row):
         print(instance_table, instance_row) #testing function, passes object on click
 
-    def onpress(self, pressed, list_id):
+    def on_press(self, pressed, list_id):
         item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
         self.ids.itemlist.add_widget(item)
 
@@ -310,24 +313,6 @@ class searchItem(Screen):
 class posApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
-
-        #define data base stuff
-        #mydb = mysql.connector.connect(
-                #host = "localhost",
-                #user = "root",
-                #passwd = "password321",
-        #)
-
-        #create a cursor
-        #c = mydb.cursor()
-
-        #creat an actual database
-        #c.execute("CREATE DATABASE IF NOT EXISTS second_db")
-
-        #check to see if database was created
-        #c.execute("SHOW DATABASES")
-        #for db in c:
-            #print(db)
 
         screen_manager.add_widget(frontPage(name="front"))
         screen_manager.add_widget(login(name="login"))
