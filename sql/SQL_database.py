@@ -8,9 +8,9 @@ ______________Initialisation of the database_______________
 ___________________________________________________________
 '''
 
-#Opening of the database
-conn = sqlite3.connect('../sql/POS_database.db')
-#Creation of the cursor
+# Opening of the database
+conn = sqlite3.connect('POS_database.db')
+# Creation of the cursor
 cursor = conn.cursor()
 print("Database opened successfully")
 
@@ -20,7 +20,8 @@ ____________________Primary functions______________________
 ___________________________________________________________
 '''
 
-#Creation of all the tables if not exist.
+
+# Creation of all the tables if not exist.
 def creation_tables():
     cursor.execute("""CREATE TABLE IF NOT EXISTS orders(
                        ORDER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,21 +73,24 @@ def creation_tables():
                         PASSWORD TEXT NON NULL)   
                         """)  # Admin must be 0 or 1. (BOOL)
 
+
 # Create an admin user if one doesnt exist
 
 
-#Fonction to drop a table
+# Fonction to drop a table
 def drop_table(table_name):
     command = "DROP TABLE ", table_name
     command = ''.join(command)
     cursor.execute(command)
 
-#Fonction to add a value in a table
+
+# Fonction to add a value in a table
 def add_values(table, attributs, values):
     command = "INSERT OR REPLACE INTO ", table, attributs, "VALUES", values
     command = ''.join(command)
     conn.execute(command)
     conn.commit()
+
 
 #
 def add_values_only(table, attributs, values):
@@ -178,13 +182,18 @@ def remove_item(value):
 def see_stock():
     SQL_Query_table('items')
 
+def see_items(item_id):
+    command = "SELECT ITEM_ID, NAME, NUMBER, PRICE FROM items WHERE ITEM_ID = ?"
+    item = SQL_Query_with_target(item_id, command)
+    return item
+
 
 def change_number_stock(key, value):
     update_values('items', 'NUMBER', value, 'ITEM_ID', key)
 
+
 def change_number_stock_bulk(llist):
     for cell in llist:
-
         value = str(cell[0])
         key = str(cell[1])
         update_values('items', 'NUMBER', value, 'ITEM_ID', key)
@@ -192,7 +201,6 @@ def change_number_stock_bulk(llist):
 
 def change_price_stock(key, value):
     update_values('items', 'PRICE', value, 'ITEM_ID', key)
-
 
 
 # stock functions
@@ -212,6 +220,27 @@ def add_order(values):
     values = ','.join(values)
     add_values('orders', '(CUSTOMER_ID,DATE,TOTAL_PRICE,STATUT)', values)
 
+def search_order(customer_id,dateb,datee):
+    command = "SELECT ORDER_ID, CUSTOMER_ID, DATE, TOTAL_PRICE, STATUT FROM orders WHERE CUSTOMER_ID = ?"
+    order=SQL_Query_with_target(customer_id, command)
+    print(order)
+    print(type(order))
+    dateb = dateb.split('/')
+    datee = datee.split('/')
+    order_between_two_dates=[]
+    for element in order:
+        date=element[2]
+        date2=date.split(' ')
+        date3=date2[0]
+        date4=date3.split('-')
+        if dateb[0] <= date4[0] <= datee[0] and dateb[1] <= date4[1] <= datee[1] and dateb[2] <= date4[2] <= \
+                datee[2]:
+            order_between_two_dates.append(element)
+        else:
+            continue
+    return order_between_two_dates
+
+
 
 # item_bought functions
 
@@ -223,6 +252,26 @@ def add_item_boughts(values):
     values.insert(1, date)
     values = ','.join(values)
     add_values('items_bought', '(CUSTOMER_ID,DATE,ITEM_ID,NUMBER,PRICE)', values)
+
+def see_item_boughts(customer_id,dateb, datee):
+    command = "SELECT CUSTOMER_ID, DATE, ITEM_ID, NUMBER, PRICE FROM items_bought WHERE CUSTOMER_ID = ?"
+    items = SQL_Query_with_target(customer_id, command)
+    items_between_two_dates=[]
+    dateb=dateb.split('/')
+    datee=datee.split('/')
+    for element in items:
+        element2=list(element)
+        element3=element2[1]
+        element4=element3.split(' ')
+        element5=element4[0]
+        element6=element5.split('-')
+        if dateb[0] <= element6[0] <= datee[0] and dateb[1] <= element6[1] <= datee[1] and dateb[2] <= element6[2] <= \
+                datee[2]:
+            items_between_two_dates.append(element)
+        else:
+            continue
+    return items_between_two_dates
+
 
 
 # money_transactions functions
@@ -279,6 +328,11 @@ def calculate_balance(dateb, datee):
 def add_customer(values):
     add_values('customers', '(FIRST_NAME,LAST_NAME,EMAIL,PHONE_NUMBER,POSTAL_ADRESS)', values)
 
+def search_customer(customer_id):
+    command = "SELECT CUSTOMER_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE_NUMBER, POSTAL_ADRESS FROM customers WHERE CUSTOMER_ID = ?"
+    customer=SQL_Query_with_target(customer_id, command)
+    return customer
+
 
 def remove_customer(values):
     delete_values('customers', 'CUSTOMER_ID', values)
@@ -288,9 +342,11 @@ def see_item_bought(values):
     command = "SELECT CUSTOMER_ID, DATE, ITEM_ID, NUMBER, PRICE FROM items_bought WHERE CUSTOMER_ID = ?"
     SQL_Query_with_target(values, command)
 
+
 def qr_code_item(qr_code):
     command = "SELECT ITEM_ID, NAME, BARECODE, PICTURE, NUMBER, PRICE, DESCRIPTION FROM items WHERE BARECODE = ?"
     SQL_Query_with_target(qr_code, command)
+
 
 
 # Temp Functions
@@ -298,12 +354,7 @@ def createOrder():
     '''
     Creates an order with random information.
     '''
-    ir = 9 #1-9 are the items index ranges in the test DB
-    
-
-
-
-
+    ir = 9  # 1-9 are the items index ranges in the test DB
 
 
 creation_tables()
@@ -315,15 +366,18 @@ creation_tables()
 # update_values('orders','total_price','45','CUSTOMER_ID','1')
 # delete_values('orders', 'ORDER_ID', '1')
 #add_item('("Banana","124323","banana.jpg","12","1.0","From California")')
-# add_order('("6","18"')
-# add_item_boughts('("1","1201","4","12")')
+#add_order('("1","18"')
+#add_item_boughts('("1","4","6","15")')
 # add_transcation('("15","+","1234.65","164534348393423051")')
 # calculate_balance('2022/11/12','2022/11/14')
 # add_customer("('BB', 'CC', 'cc001@csusm.edu', '+336127574678', '123 stAE')")
 # remove_customer('2')
 # see_item_bought('1')
-#qr_code_item('124323')
-##
-
-#conn.close()
-#print('Database closed successfully')
+# qr_code_item('124323')
+# email question & nouvelle fonction à propos des dates a et b
+#search_customer('1')
+#value=see_item_boughts('1','2022/11/28','2022/11/28')
+# conn.close()
+# print('Database closed successfully')
+#list_order=search_order('6','2022/11/09','2022/11/11')
+#print(list_order)
