@@ -224,7 +224,14 @@ class mainPOS(Screen):
             listOfList.append(setOfProd)
         # Since the DB is so small, if we search Mario, only 4 items return   
         print(listOfList)
-        results = listOfList[0]
+
+        # ****
+        # Keep in mind we need the product_id for the items_bought table.
+        # So we need to pass that data along
+        # Every row (so what results holds)
+        # [id, name, price, barcode]
+        # hence [1:] returns just [name, price, barcode]
+        results = listOfList[0][1:] 
 
         # clear to repopulate search results
         self.ids.mdlSEARCHRESULTS.clear_widgets()

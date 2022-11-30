@@ -89,7 +89,7 @@ class SearchEngine:
         A generator that will take in a dataframe, and will on yield return an {amount} back to the caller until empty.
         '''
         for _, row in df.iterrows():
-            #id = row['ITEM_ID']
+            id = row['ITEM_ID']
             name = row['NAME']
             barcode = row['BARECODE']
             #pic  = row['Picture']
@@ -97,7 +97,7 @@ class SearchEngine:
             price = row['PRICE']
             #description = row['Description']
             #yield ProductNode(id, name, price)
-            yield [name, price, barcode]
+            yield [id, name, price, barcode]
 
 class ProductNode:
     '''
