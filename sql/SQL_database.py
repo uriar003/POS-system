@@ -133,6 +133,14 @@ def SQL_Query_table(table):
     print(rows)
     return rows
 
+def SQL_Query_table_highest_id(table, column):
+    command = "SELECT Max(", column, ") FROM ", table
+    command = ''.join(command)
+    rows = cursor.execute(command).fetchall()
+    if not rows:
+        return 0
+    return rows[0][0] # Returns the largest id
+
 
 def format_list(inputs: list, items=False) -> str:
     '''
