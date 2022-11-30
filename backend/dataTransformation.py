@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 sys.path.insert(0, "../sql")
 import SQL_database as sdb
-
+from datetime import datetime
 
 globalHeader = ["ITEM_ID", "NAME", "BARECODE", "PICTURE", "COUNT", "PRICE", "DESCRIPTION"]
 
@@ -11,7 +11,6 @@ class LoadData:
     def export_template(fileloc:str=""):
         '''
         Exports a template that can be used for the format of uploading inventory.
-        `       
         Parameters:
             we should know the file location of where to save this data...
 
@@ -109,7 +108,27 @@ class SQL_Reports:
         This one could take in input for a month range...
         """
         
+class Transaction:
+    
+    @staticmethod
+    def generateInvoice(productList:list, cost:float, tax:float, cc:int=0):
+        """
+        productList will come in as a list of lists
+        [[item_id, Name, price, Barcode?(barcode can be removed but doesnt need to be)],....]
 
+        """
+        today = datetime.today().date()
+        total = float('%.2f' % (cost*(1+tax)))
+        transaction_details = sdb.format_list([today, total, "SOLD"]) # Format the input for the order
+        sdb.add_order(transaction_details)
+        # Get the newly created id. (Will be the highest ID)
+        newId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
+        for product in productList:
+            item_id = product[0]
+            #prod = product[1]
+            price = product[2]
+            productDetails = sdb.format_list([newId, today, item_id, 1, price, tax])
+            sdb.add_item_boughts(productDetails)
 
 
 ###
@@ -129,3 +148,12 @@ def run():
 #print(df)
 #run()
 #LoadData.export_inventory()
+
+"""today = datetime.today().date()
+cost = 20
+tax = .0775
+total = float('%.2f' % (cost*(1+tax)))
+transaction_details = sdb.format_list([today, total, "SOLD"])
+#print(x)
+newId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
+z = sdb.SQL_Query_table("items")"""
