@@ -113,7 +113,7 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 on_press:
-                    root.manager.transition.direction = 'right'
+                    root.manager.transition.direction = 'up'
                     root.manager.transition.duration = 1
                     root.manager.current = 'front'
 
@@ -159,7 +159,7 @@
                     canvas.before:
                         Color:
                             rgba: 87/255,87/255,94/255,1
-                        Rectangle:
+                        RoundedRectangle:
                             size: self.size
                             pos: self.pos
 
@@ -167,7 +167,7 @@
                     font_size:15
 
                     size_hint_y:None
-                    height:300
+                    height:600 #300 was default
 
                     background_normal:""
                     #background_color:(87/255,87/255,94/255,1)
@@ -192,8 +192,8 @@
                     #background_color:(87/255,87/255,94/255,1)
                     canvas.before:
                         Color:
-                            rgba: 87/255,87/255,94/255,1
-                        Rectangle:
+                            rgba: 48/255,84/255,150/255,.7
+                        RoundedRectangle:
                             size: self.size
                             pos: self.pos
 
@@ -209,8 +209,8 @@
                     #background_color:(87/255,87/255,94/255,1)
                     canvas.before:
                         Color:
-                            rgba: 87/255,87/255,94/255,1
-                        Rectangle:
+                            rgba: 48/255,84/255,150/255,.7 #87/255,87/255,94/255,1
+                        RoundedRectangle:
                             size: self.size
                             pos: self.pos
 
@@ -226,8 +226,8 @@
                     #background_color:(87/255,87/255,94/255,1)
                     canvas.before:
                         Color:
-                            rgba: 87/255,87/255,94/255,1
-                        Rectangle:
+                            rgba: 48/255,84/255,150/255,.7
+                        RoundedRectangle:
                             size: self.size
                             pos: self.pos
 
@@ -242,25 +242,25 @@
                     #padding: 10
                     spacing: 5
 
-                    Button:
+                    RoundedButton:
                         text:"Clear Cart"
                         font_size:12
 
                         size_hint:(1,.95)
                         height:50
-                        background_normal:""
-                        background_color:(87/255,87/255,94/255,1)
+                        #background_normal:""
+                        #background_color:(87/255,87/255,94/255,1)
 
                         on_release: root.delete_cartall(self)
 
-                    Button:
+                    RoundedButton:
                         text:"Finish"
                         font_size:12
 
                         size_hint:(1,0.95)
                         height:50
-                        background_normal:""
-                        background_color:(87/255,87/255,94/255,1)
+                        #background_normal:""
+                        #background_color:(87/255,87/255,94/255,1)
 
                         on_press:
                             root.manager.transition.direction = 'left'
@@ -275,31 +275,29 @@
                     pos_hint:{'center_y':0.5}
 
                     spacing: 5
-                    #padding: 2
+                    
 
-                    #Label:
-                        #text:" "
-                        #height:25
-
-                    Button:
-                        text:"Next Page"
-                        font_size: 12
-
-                        font_size: 14
-                        height: 10
-                        background_normal:""
-                        background_color:(87/255,87/255,94/255,1)
-
-                    Button:
+                    RoundedButton:
                         text:"Search Item"
                         font_size: 12
 
                         font_size: 14
                         height: 10
-                        background_normal:""
-                        background_color:(87/255,87/255,94/255,1)
+                        #background_normal:""
+                        #background_color:(87/255,87/255,94/255,1)
 
                         on_press:
                             root.manager.transition.direction = 'left'
                             root.manager.transition.duration = 1
                             root.manager.current = 'search'
+
+<RoundedButton@Button>
+    background_color: (0,0,0,0)
+    background_normal: ''
+    canvas.before:
+        Color:
+            rgba: (48/255,84/255,150/255,1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [58]
