@@ -51,11 +51,12 @@ def creation_tables():
                         """)
 
     cursor.execute("""CREATE TABLE IF NOT EXISTS items_bought(
-                        CUSTOMER_ID INTEGER NON NULL,
+                        TRANSACTION_ID INTEGER NON NULL,
                         DATE TEXT NON NULL,
                         ITEM_ID INTEGER NON NULL,
                         NUMBER INTEGER NON NULL,
-                        PRICE FLOAT NON NULL)
+                        PRICE FLOAT NON NULL,
+                        TAX FLOAT NON NULL)
                         """)
 
     cursor.execute("""CREATE TABLE IF NOT EXISTS money_transactions(
@@ -226,7 +227,7 @@ def add_order(values):
     statut = '"waiting")'
     values.append(statut)
     values = ','.join(values)
-    add_values('orders', '(CUSTOMER_ID,DATE,TOTAL_PRICE,STATUT)', values)
+    add_values('orders', '(DATE,TOTAL_PRICE,STATUT)', values)
 
 def search_order(customer_id,dateb,datee):
     command = "SELECT ORDER_ID, CUSTOMER_ID, DATE, TOTAL_PRICE, STATUT FROM orders WHERE CUSTOMER_ID = ?"
@@ -259,7 +260,7 @@ def add_item_boughts(values):
     date = ''.join(date)
     values.insert(1, date)
     values = ','.join(values)
-    add_values('items_bought', '(CUSTOMER_ID,DATE,ITEM_ID,NUMBER,PRICE)', values)
+    add_values('items_bought', '(TRANSACTION_ID,DATE,ITEM_ID,NUMBER,PRICE)', values)
 
 def see_item_boughts(customer_id,dateb, datee):
     command = "SELECT CUSTOMER_ID, DATE, ITEM_ID, NUMBER, PRICE FROM items_bought WHERE CUSTOMER_ID = ?"
