@@ -283,7 +283,7 @@ class searchItem(Screen):
         #print("Database opened successfully") #WILL CREATE A NEW FILE IF NOT FOUND
 
         #store row data into records variable before building table
-        cursor.execute("SELECT * FROM items")
+        cursor.execute("SELECT ITEM_ID, NAME, NUMBER, PRICE, DESCRIPTION FROM items")
         conn.commit()
         ##testing query
         #for row in cursor:
@@ -297,47 +297,31 @@ class searchItem(Screen):
 
         table = MDDataTable(
                 pos_hint = {'center_x': 0.5, 'center_y': 0.5},
-                size_hint = (0.9, 0.6),
+                size_hint = (0.9, 0.8),
                 check = True,
                 use_pagination = True, #allows for pages, view all rows
                 #default = 5 items per page, can be changed using rows_num
-
-
+                rows_num = 10,
+                
+                
             #Manually insert requested columns
                 column_data = [
-                    ("ITEM_ID", dp(30)),
-                    ("NAME", dp(60)),
-                    ("BARCODE", dp(30)),
-                    ("PICTURE", dp(50)),
-                    ("NUMBER", dp(30)),
-                    ("PRICE", dp(30)),
-                    ("DESCRIPTION", dp(30))
+                    ("ITEM_ID", dp(50)),
+                    ("NAME", dp(75)),
+                    #("BARCODE", dp(30)),
+                    #("PICTURE", dp(50)),
+                    ("NUMBER", dp(50)),
+                    ("PRICE", dp(50)),
+                    ("DESCRIPTION", dp(50))
                 ],
 
             #set row data to records variableF
             row_data = records
         )
 
-        #Bind the table
-        table.bind(on_check_press=self.checked)
-        table.bind(on_row_press=self.row_checked)
-
         self.add_widget(table)
 
-    #Function for check presses
-    def checked(self,instance_table, current_row):
-        print(instance_table, current_row)  #testing function
-    #Function for row presses
-    def row_checked(self, instance_table, instance_row):
-        print(instance_table, instance_row) #testing function, passes object on click
-
-    def on_press(self, pressed, list_id):
-        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
-        self.ids.itemlist.add_widget(item)
-
-
-
-
+        
 class posApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
