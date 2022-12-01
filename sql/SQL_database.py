@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 from math import isnan
-
+from pathlib import Path
 '''
 ___________________________________________________________
 ______________Initialisation of the database_______________
@@ -9,7 +9,9 @@ ___________________________________________________________
 '''
 
 # Opening of the database
-conn = sqlite3.connect('POS_database.db')
+db_loc = str(Path(__file__).resolve().parent)+'/POS_database.db'
+print(db_loc)
+conn = sqlite3.connect(db_loc)
 # Creation of the cursor
 cursor = conn.cursor()
 print("Database opened successfully")
