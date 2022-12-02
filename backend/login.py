@@ -13,7 +13,7 @@ from enum import IntEnum
 
 # Import the SQL commands
 sys.path.insert(0, "../sql")
-import SQL_database as sdb
+import SQL_Database as sdb
 import bcrypt as bc
 
 

@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 
 sys.path.insert(0, "../sql")
-import SQL_database as sdb
+import SQL_Database as sdb
 
 
 class SearchEngine:
