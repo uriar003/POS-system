@@ -2,7 +2,7 @@
 #:import utils kivy.utils
 
 <account>
-
+    id:file_widget
     #create an embedded box
     BoxLayout:
         orientation:"vertical"
@@ -55,53 +55,59 @@
                         size: self.size
                         pos: self.pos
 
-#testing the grid layout
+        ScrollView:
+            FileChooserIconView:
+                id: filechooser
+                on_selection: file_widget.selected(filechooser.selection)
+                #specify starting path
+                path: '../backend'
+        
         BoxLayout:
-            orientation: "horizontal"
-            size:root.width,root.height
+            orientation:"horizontal"
+            pos_hint:{'center_x':0.5}
+            pos_hint:{'center_y':0.5}
+            padding: 20
+            spacing: 20
+            size_hint: (1, None)
 
-            spacing: 7
-            padding: 2
+            Button:
+                text:"IMPORT"
+                font_size:25
 
-            ScrollView:
-                MDList:
-                    id: itemlist
-                    OneLineListItem:
-                        text: "Add Item"
-                        text_color: 1,1,0,1
+                size_hint:(2,2)
+                height:25
 
-                        # root.onpress refers to the onpress func within class mainPOS
-                        on_release: root.onpress(self, "item1")
-                        background_normal:""
-                        background_color:(47/255,72/255,196/255,1.0)
-                        canvas.before:
-                            Color:
-                                rgba: (12/255,10/255,90/255,1.0)
-                            Rectangle:
-                                size: self.size
-                                pos: self.pos
-                            #Text Properties
-                            #color: (125/255,105/255,150/255,1)
-                        bold: True
-                        italic: True
-                        outline_color:(1,0,0)
-                        outline_width: 2
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
 
-            Label:
-                text:"Other List Here"
-                font_size: 18
+                #on_press: root.manager.current = app.importLogic("IMPORT", root.ids)
+                on_press: print("File Imported")
+                    
+            Button:
+                text:"EXPORT"
+                font_size:25
 
-                size_hint:(2.5,1)
+                size_hint:(2,2)
+                height:25
 
-                BoxLayout:
-                    orientation: "horizontal"
-                    #size:root.width,root.height
-                    size_hint:(0.5,0.5)
-                    pos_hint:{'center_x':0.5}
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
 
-                    Button:
-                        text:"Generate Report"
-                        font_size:12
+                #on_press: root.manager.current = app.importLogic("DOWNLOAD")
+                on_press: print("Database Exported")
+            
+            Button:
+                text:"EXPORT TEMPLATE"
+                font_size:25
+
+                size_hint:(2,2)
+                height:25
+
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
+
+                #on_press: root.manager.current = app.importLogic("DOWNLOAD_TEMPLATE")
+                on_press: print("Template Exported")
 
                         background_normal:""
                         background_color:(87/255,87/255,94/255,1)
