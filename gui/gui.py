@@ -255,10 +255,13 @@ class reports(Screen):
         self.ids.itemlist.add_widget(item)
 
 class account(Screen):
-    def on_press(self, pressed, list_id):
-        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
-       #item.add_widget(IconLeftWidget(icon="soup.png"))
-        self.ids.itemlist.add_widget(item)
+   def selected(self, filename):
+        try:
+        #return filePath on click
+            filePath = filename[0]
+            print(filePath)                            
+        except:
+            pass
 
 class cart(Screen):
     def on_press(self, pressed, list_id):
