@@ -12,7 +12,8 @@ import sys
 from enum import IntEnum
 
 # Import the SQL commands
-sys.path.insert(0, "../sql")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql")
 import SQL_Database as sdb
 import bcrypt as bc
 

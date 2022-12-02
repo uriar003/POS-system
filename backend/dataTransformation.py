@@ -1,7 +1,8 @@
 import sys
 import pandas as pd
-sys.path.insert(0, "../sql")
-import SQL_database as sdb
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql")
+import SQL_Database as sdb
 from datetime import datetime
 
 globalHeader = ["ITEM_ID", "NAME", "BARECODE", "PICTURE", "COUNT", "PRICE", "DESCRIPTION"]

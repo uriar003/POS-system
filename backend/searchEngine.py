@@ -1,7 +1,8 @@
 import pandas as pd
 import sys
 
-sys.path.insert(0, "../sql")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql")
 import SQL_Database as sdb
 
 
