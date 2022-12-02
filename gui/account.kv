@@ -61,6 +61,8 @@
                 on_selection: file_widget.selected(filechooser.selection)
                 #specify starting path
                 path: '../backend'
+
+
         
         BoxLayout:
             orientation:"horizontal"
@@ -93,7 +95,7 @@
                 background_normal:""
                 background_color:(87/255,87/255,94/255,1)
 
-                #on_press: root.manager.current = app.importLogic("DOWNLOAD")
+                #on_press: root.manager.current = app.exportLogic("DOWNLOAD")
                 on_press: print("Database Exported")
             
             Button:
@@ -106,8 +108,22 @@
                 background_normal:""
                 background_color:(87/255,87/255,94/255,1)
 
-                #on_press: root.manager.current = app.importLogic("DOWNLOAD_TEMPLATE")
+                #on_press: root.manager.current = app.exportLogic("DOWNLOAD_TEMPLATE",)
                 on_press: print("Template Exported")
 
-                        background_normal:""
-                        background_color:(87/255,87/255,94/255,1)
+    Label:
+        id: fileString
+        text: "Selected File:"
+        font_size:15
+
+        size_hint_y:None
+        height:20
+
+        background_normal:""
+        #background_color:(87/255,87/255,94/255,1)
+        canvas.before:
+            Color:
+                rgba: 48/255,84/255,150/255,.7 #87/255,87/255,94/255,1
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
