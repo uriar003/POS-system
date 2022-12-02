@@ -75,7 +75,7 @@ class SearchEngine:
         '''
         Given a string, will search the pandas dataframe for the value, followed 
         '''
-        return self.df[self.df['NAME'].str.contains(inp)]
+        return self.df[self.df['NAME'].str.contains(inp, na=False, case=False)]
 
     def search_barcode(self, inp:str):
         '''
