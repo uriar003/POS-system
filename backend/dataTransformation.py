@@ -157,4 +157,4 @@ transaction_details = sdb.format_list([today, total, "SOLD"])
 #print(x)
 newId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
 z = sdb.SQL_Query_table("items")"""
-run()
+#run()
