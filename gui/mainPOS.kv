@@ -136,7 +136,7 @@
                     size_hint_y: 0.08
                     multiline: False
                     text: "search for an item here..."
-                    on_text_validate: root.on_mdquery(self)
+                    # on_text_validate: root.on_searchquery(self)
 
                 ScrollView:
                     MDList:
@@ -251,7 +251,7 @@
                         #background_normal:""
                         #background_color:(87/255,87/255,94/255,1)
 
-                        on_release: root.delete_cartall(self)
+                        on_release: root.cart_deleteall(self)
 
                     RoundedButton:
                         text:"Finish"
