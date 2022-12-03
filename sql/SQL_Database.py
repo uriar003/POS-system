@@ -379,8 +379,7 @@ def remove_customer(values):
 
 def qr_code_item(qr_code):
     command = "SELECT ITEM_ID, NAME, BARECODE, PICTURE, NUMBER, PRICE, DESCRIPTION FROM items WHERE BARECODE = ?"
-    SQL_Query_with_target(qr_code, command)
-
+    return SQL_Query_with_target(qr_code, command)
 
 
 # Temp Functions
