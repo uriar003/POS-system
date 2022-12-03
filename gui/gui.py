@@ -19,8 +19,8 @@ from kivymd.uix.datatables import MDDataTable
 
 from pathlib import Path
 import os, sys #for file paths
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-sys.path.insert(0, "../backend")
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/backend") #Parent directory
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql") #Parent directory
 import sql.SQL_Database
 
 

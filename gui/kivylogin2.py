@@ -13,9 +13,9 @@ from kivymd.uix.datatables import MDDataTable
 ### will be used when path works ###
 
 from pathlib import Path
-#import os, sys #for file paths
-#sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-#sys.path.insert(0, "../backend")
+import os, sys #for file paths
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, "../backend")
 #import sql.SQL_database
 
 
