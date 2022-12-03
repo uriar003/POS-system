@@ -21,8 +21,8 @@ from pathlib import Path
 import os, sys #for file paths
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/backend") #Parent directory
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql") #Parent directory
-import sql.SQL_Database
-
+#import sql.SQL_Database
+import SQL_Database as sdb
 
 import sqlite3
 import cv2                          # OpenCV is under Apache License 2.0, so it is free to use commercially
@@ -85,10 +85,10 @@ class mainPOS(Screen):
         self.list_searchresults = []
         
         # constantly call camera for barcode frames
-        Clock.schedule_interval(self.tickerscanner, 1.0/2.0)
+        #Clock.schedule_interval(self.tickerscanner, 1.0/2.0)
         # constantly call search bar for new query
-        Clock.schedule_interval(self.tickersearch, 1.0/2.0)
-        self.cam = cv2.VideoCapture(1)
+        #Clock.schedule_interval(self.tickersearch, 1.0/2.0)
+        #self.cam = cv2.VideoCapture(1)
         self.prior = None           # bool to prevent barcode over-rescanning
         self.priorsearch = None     # used to stop search if query is the same
         self.se = SearchEngine()
@@ -115,7 +115,7 @@ class mainPOS(Screen):
         # ideally return a list of lists that I can loop through to populate the search list
         # se is the SearchEngine class from the backend library.
 
-
+        print("Cart", self.list_cart)
         if(self.priorsearch != self.ids.searchprompt.text):
             self.priorsearch = self.ids.searchprompt.text
 
@@ -166,7 +166,7 @@ class mainPOS(Screen):
         # placeholder for barcode returning from SQL a list of relevant item properties
         # params: item id, name, barcode, picture, number in stock, price, desc, item in cart at first add
         # SQLitem = [ 27, "Name", barcode, "picture.jfif", num in stock, price, desc, 1 ]
-        retSQL = sql.SQL_Database.qr_code_item(bliteral)
+        retSQL = sdb.qr_code_item(bliteral)
         print(retSQL)
         # guard if barcode does not return a matching item result
         if(len(retSQL) > 0):
@@ -194,6 +194,7 @@ class mainPOS(Screen):
             pup_noitemfound.open()
 
     def addsearchitem(self, obj):
+        print("Cart:", self.list_cart)
         for i in self.list_searchresults:
             # if clicked mdlist elem's id equals item id in internal list, then add to cart
             # this is a scuffed way to retain the SQL data, as ThreeLineCompactItem cannot retain all data
