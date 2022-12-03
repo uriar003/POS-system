@@ -163,7 +163,7 @@ def format_list(inputs: list, items=False) -> str:
     else:
         for row in inputs:
             out += '('
-            print(row)
+            #print(row)
             for cell in row:
                 if type(cell) in (float, int) and not isnan(cell):
                     out += f"{cell},"

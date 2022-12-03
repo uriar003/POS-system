@@ -55,9 +55,10 @@ class LoadData:
             df.set_axis(globalHeader[1:], axis=1, inplace=True) # Update the headers to match to work within the code.
 
             df2 = pd.DataFrame(LoadData.get_inventory(), columns=globalHeader)
+            
             existingProducts = {prod[0] : (prod[1], prod[2]) for prod in df2[['NAME', 'PRICE', "ITEM_ID"]].to_numpy()}
             out = df[globalHeader[1:]].to_numpy().tolist()
-            print(existingProducts)
+            #print(existingProducts)
             # Lists for either updating old inventory, or adding new products.
             existingList = []
             nonExistingList = []
@@ -74,13 +75,13 @@ class LoadData:
             #print("Existing:",existingList)
             #print("Nonexisting:",nonExistingList)
             if existingList:
-                alreadyExist = sdb.format_list(existingList)
-                print(alreadyExist)
-                #sdb.change_number_stock_bulk(alreadyExist)
                 sdb.change_number_stock_bulk(existingList)
             if nonExistingList:
-                doesntExist = sdb.format_list(nonExistingList)
-                sdb.add_item(doesntExist)
+                    newList = []
+                    for cell in nonExistingList:
+                        newList.append([str(x).replace("'","") if type(x) == str else x for x in cell])
+                    doesntExist = sdb.format_list(newList)
+                    sdb.add_item(doesntExist)
             return True
         else:
             print("Invalid File type")
@@ -136,13 +137,11 @@ class Transaction:
 #LoadData.print_inventory()
 
 def run():
-    fn = 'vg_data__1.xlsx'
-    
+    fn = '../JedData.xlsx'
 
     LoadData.load_inventory(fn)
-    df = pd.DataFrame(LoadData.get_inventory(), columns=globalHeader)
-    print(df)
-
+    #df = pd.DataFrame(LoadData.get_inventory(), columns=globalHeader)
+    #print(df)
 #LoadData.export_template()
 #run()
 #df = pd.DataFrame(LoadData.get_inventory(), columns=header)#
@@ -158,3 +157,4 @@ transaction_details = sdb.format_list([today, total, "SOLD"])
 #print(x)
 newId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
 z = sdb.SQL_Query_table("items")"""
+run()
