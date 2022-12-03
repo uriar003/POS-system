@@ -114,12 +114,13 @@ class SearchEngine:
             id = row['ITEM_ID']
             name = row['NAME']
             barcode = row['BARECODE']
-            #pic  = row['Picture']
-            #stock = row['Number_in_stock']
+            pic  = row['PICTURE']
+            stock = row['NUMBER']
             price = row['PRICE']
-            #description = row['Description']
+            description = row['DESCRIPTION']
             #yield ProductNode(id, name, price)
-            yield [id, name, price, barcode]
+            #yield [id, name, price, barcode]
+            yield [id, name, barcode, pic, stock, price, description]
 
     def gen_data_nodes(self,df, amount:int=12):
         '''
@@ -181,5 +182,5 @@ class ProductNode:
 
 
 # Unnote to test
-#x = SearchEngine()
-#x.user_input(nodes=True)
+x = SearchEngine()
+x.user_input()
