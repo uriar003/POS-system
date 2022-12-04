@@ -3,7 +3,7 @@
     BoxLayout:
         orientation:"vertical"
         size:root.width,root.height
-        padding: 3
+        padding: 10
 
         background_color: (10/255, 2/255, 48/255, 1)
         canvas.before:
@@ -19,7 +19,7 @@
             orientation:"horizontal"
             #size:root.width,root.height
             size_hint:(1,None)
-            height:30
+            height:25
 
             #size: (500, 500)
             #pos: (10,10)
@@ -245,7 +245,7 @@
 
                     RoundedButton:
                         text:"Clear Cart"
-                        font_size:12
+                        font_size: self.width/15
 
                         size_hint:(1,.95)
                         height:50
@@ -256,7 +256,7 @@
 
                     RoundedButton:
                         text:"Finish"
-                        font_size:12
+                        font_size: self.width/15
 
                         size_hint:(1,0.95)
                         height:50
@@ -280,9 +280,9 @@
 
                     RoundedButton:
                         text:"Search Item"
-                        font_size: 12
+                        font_size: self.width/30
 
-                        font_size: 14
+                        #font_size: 14
                         height: 10
                         #background_normal:""
                         #background_color:(87/255,87/255,94/255,1)
@@ -302,3 +302,4 @@
             size: self.size
             pos: self.pos
             radius: [58]
+
