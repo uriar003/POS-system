@@ -60,7 +60,7 @@
                 id: filechooser
                 on_selection: file_widget.selected(filechooser.selection)
                 #specify starting path
-                path: '../backend'
+                path: '../Inventory'
 
 
         
@@ -82,8 +82,8 @@
                 background_normal:""
                 background_color:(87/255,87/255,94/255,1)
 
-                #on_press: root.manager.current = app.importLogic("IMPORT", root.ids)
-                on_press: print("File Imported")
+                on_press: root.submitImport()
+                on_press: fileString.text = "File imported"
                     
             Button:
                 text:"EXPORT"
@@ -96,7 +96,7 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 #on_press: root.manager.current = app.exportLogic("DOWNLOAD")
-                on_press: print("Database Exported")
+                on_press: fileString.text = "Database Exported"
             
             Button:
                 text:"EXPORT TEMPLATE"
@@ -109,11 +109,11 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 #on_press: root.manager.current = app.exportLogic("DOWNLOAD_TEMPLATE",)
-                on_press: print("Template Exported")
+                on_press: fileString.text = ("Database Template Exported")
 
     Label:
         id: fileString
-        text: "Selected File:"
+        text: "File Selected:"
         font_size:15
 
         size_hint_y:None
@@ -127,3 +127,4 @@
             RoundedRectangle:
                 size: self.size
                 pos: self.pos
+                
