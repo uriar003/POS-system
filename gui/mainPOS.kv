@@ -43,7 +43,7 @@
                     root.manager.current = 'front'
 
             Button:
-                text:"Account"
+                text:"Inventory"
                 font_size:12
 
                 size_hint:(1,1)
@@ -164,11 +164,13 @@
                             size: self.size
                             pos: self.pos
 
-                ScrollView:
+                #ScrollView:
+                Label:
+                    text: "Whaaaat Happpened Hereee"
                     font_size:15
 
-                    size_hint_y:None
-                    height:600 #300 was default
+                    size_hint_y:0.8
+                    #height:600 #300 was default
 
                     background_normal:""
                     #background_color:(87/255,87/255,94/255,1)
