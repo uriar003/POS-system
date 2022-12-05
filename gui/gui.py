@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql") #Parent d
 PARENTDIR = str(Path(__file__).resolve().parent.parent)
 
 #import sql.SQL_Database
+import dataTransformation as dt
 import SQL_Database as sdb
 import Invoices_generating as ig
 
@@ -385,15 +386,15 @@ class mainPOS(Screen):
 class reports(Screen):
     @staticmethod
     def dailySales():
-        pass
+        dt.SQL_Reports.dailyReport()
 
     @staticmethod
     def totalProductSales():
-        pass
+        dt.SQL_Reports.totalProductSales()
 
     @staticmethod
     def salesTransactions():
-        pass
+        dt.SQL_Reports.transactions()
 
 class account(Screen):
     #placeholder for a selected file path
@@ -493,7 +494,7 @@ class posApp(MDApp):
         screen_manager.add_widget(mainPOS(name="main"))
         screen_manager.add_widget(cart(name="cart"))
         screen_manager.add_widget(reports(name="reports"))
-        screen_manager.add_widget(addInv(name="invent"))
+        screen_manager.add_widget(addInv(name="invent"))  # May need to delete. Is this not needed?**
         screen_manager.add_widget(account(name="account"))
         screen_manager.add_widget(searchItem(name="search"))
         screen_manager.add_widget(helpScreen(name="help"))

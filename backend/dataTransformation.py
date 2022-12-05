@@ -94,43 +94,23 @@ class LoadData:
 
 class SQL_Reports:
     @staticmethod
-    def displayInventory():
+    def dailyReport():
         pass
 
     @staticmethod
-    def displayProductOrders(prodSku:str):
+    def totalProductSales():
         '''
         This report will take in a Sku, and it will search all orders where the product was sold.
         '''
         pass
 
     @staticmethod
-    def displaySoldProducts():
+    def transactions():
         """
         This one could take in input for a month range...
         """
+        pass
         
-class Transaction:
-    
-    @staticmethod
-    def generateInvoice(productList:list, cost:float, tax:float, cc:int=0):
-        """
-        productList will come in as a list of lists
-        [[item_id, Name, price, Barcode?(barcode can be removed but doesnt need to be)],....]
-
-        """
-        today = datetime.today().date()
-        total = float('%.2f' % (cost*(1+tax)))
-        transaction_details = sdb.format_list([today, total, "SOLD"]) # Format the input for the order
-        sdb.add_order(transaction_details)
-        # Get the newly created id. (Will be the highest ID)
-        newId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
-        for product in productList:
-            item_id = product[0]
-            #prod = product[1]
-            price = product[2]
-            productDetails = sdb.format_list([newId, today, item_id, 1, price, tax])
-            sdb.add_item_boughts(productDetails)
 
 
 ###
