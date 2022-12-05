@@ -231,6 +231,8 @@ def add_order(values):
     values = ','.join(values)
     add_values('orders', '(DATE,TOTAL_PRICE,STATUT)', values)
 
+
+
 def search_order(customer_id,dateb,datee):
     command = "SELECT ORDER_ID, CUSTOMER_ID, DATE, TOTAL_PRICE, STATUT FROM orders WHERE CUSTOMER_ID = ?"
     order=SQL_Query_with_target(customer_id, command)
@@ -317,13 +319,16 @@ def see_item_bought(values):
 # money_transactions functions
 
 def add_transcation(values):
+    print('h')
     date = str(datetime.now())
-    values = values.split(',')
-    date = "'", date, "'"
+    #values = values.split(',')
+    date =  date
     date = ''.join(date)
-    values.insert(1, date)
-    values = ','.join(values)
-    add_values('money_transactions', '(TRANSACTION_ID,DATE,TRANSACTION_TYPE,TOTAL_PRICE,CREDIT_CARD_ID)', values)
+    values.insert(0, date)
+    #values = ','.join(values)
+    values = format_list(values)
+    print(values)
+    add_values('money_transactions', '(DATE,TRANSACTION_TYPE,TOTAL_PRICE,CREDIT_CARD_ID)', values)
 
 
 def calculate_balance(dateb, datee):

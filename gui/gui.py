@@ -17,6 +17,7 @@ from kivymd.app import MDApp
 from kivymd.uix.list import *
 from kivymd.uix.datatables import MDDataTable
 
+import datetime
 from pathlib import Path
 import os, sys #for file paths
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/backend") #Parent directory
@@ -74,10 +75,12 @@ class frontPage(Screen):
 class cart(Screen):
     def __init__(self, **kwargs):
         super(Screen, self).__init__(**kwargs)
+        self.err = ""
         self.subtotal = 0
         self.tax = 0
         self.cart = []
         self.ids.total.text = "0.00"
+        self.orderTotal = 0
         self.transactionConfirmed = False
         #self.ids.name.text = None
         #self.ids.name.text = None
@@ -89,10 +92,9 @@ class cart(Screen):
         self.subtotal = dataset['Subtotal']
         self.tax = dataset['SalesTax']
         self.cart = dataset['Cart']
-        self.orderTotal = float(self.subtotal *(1+ self.tax))
+        self.orderTotal = float(self.subtotal * (1+ self.tax))
         self.isCC = False
         self.isCash = False
-        #for obj in cart:
         
          
         self.ids.total.text = self.getDollar(self.orderTotal)
@@ -129,11 +131,27 @@ class cart(Screen):
         print(name, email)
 
     def confirmTransaction(self):
-        err = "Needs cash or CC."
-        if False:
-            pass
-        else:
-            self.ids.approval.text = f"Failed to transact.\n{err}"
+        try:
+            if not self.isCC and not self.isCash:   
+                self.err = "Needs cash or CC." 
+            else:                
+                if self.isCC:
+                    saleType = "CreditCard"
+                    if not int(self.ccVerificationNum):
+                        self.err = "Not a integer for CC id."
+                        raise Exception 
+                    cc = self.ccVerificationNum
+                else:
+                    saleType = "CASH"
+                    cc = 0
+                total = self.getDollar(self.subtotal * (1+ self.tax))[1:]
+                print(total, type(total))
+                order_data = [saleType,total , cc]
+                print("working")
+                sdb.add_transcation(order_data)
+                self.ids.approval.text = "Transaction Success!"
+        except:
+            self.ids.approval.text = f"Failed to transact.\n{self.err}"
         
 
 class addInv(Screen):
