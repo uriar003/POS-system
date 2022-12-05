@@ -366,17 +366,17 @@ class mainPOS(Screen):
         self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(0.00)
 
     def cart_deleteall(self, obj):
-
         #self.subtotal = 0.00
-
         for i in self.list_cart:
-            if(obj.secondary_text == str(i[0]) and (i[7] > 1)):
+            self.cart_deleteitem(i)
+            """if(obj.secondary_text == str(i[0]) and (i[7] > 1)):
                 break
             elif(obj.secondary_text == str(i[0]) and (i[7] == 1)):
                 self.list_cart.remove(i)
                 break
-
-        self.update_cart(i, False)
+            self.list_cart.remove(i)
+            self.update_cart(i, False)
+            """
 
 class reports(Screen):
     def generatereport(self, *args):
