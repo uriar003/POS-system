@@ -180,7 +180,6 @@ class cart(Screen):
             self.ids.approval.text = f"Failed to transact.\n{self.err}"
             print(e)
         
-
 class addInv(Screen):
     pass
 
@@ -376,7 +375,7 @@ class mainPOS(Screen):
         self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(0.00)
         self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(0.00)
 
-    def cart_deleteall(self):
+    def cart_deleteall(self,obj=None):
         #self.subtotal = 0.00
         for i in self.list_cart:
             self.cart_deleteitem(i)
@@ -388,7 +387,6 @@ class mainPOS(Screen):
             self.list_cart.remove(i)
             self.update_cart(i, False)
             """
-
 
 class reports(Screen):
     @staticmethod
