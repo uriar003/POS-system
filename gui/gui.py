@@ -25,6 +25,8 @@ import os, sys #for file paths
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/backend") #Parent directory
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql") #Parent directory
 
+PARENTDIR = str(Path(__file__).resolve().parent.parent)
+
 #import sql.SQL_Database
 import SQL_Database as sdb
 import Invoices_generating as ig
@@ -379,11 +381,19 @@ class mainPOS(Screen):
             self.update_cart(i, False)
             """
 
+
 class reports(Screen):
-    def generatereport(self, *args):
-        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
-       #item.add_widget(IconLeftWidget(icon="soup.png"))
-        self.ids.itemlist.add_widget(item)
+    @staticmethod
+    def dailySales():
+        pass
+
+    @staticmethod
+    def totalProductSales():
+        pass
+
+    @staticmethod
+    def salesTransactions():
+        pass
 
 class account(Screen):
     #placeholder for a selected file path
@@ -398,9 +408,10 @@ class account(Screen):
             pass
 
     #current path
-    path = os.path.dirname(os.path.abspath(__file__))
+    #path = os.path.dirname(os.path.abspath(__file__))
     #path to Exports folder
-    Exports = os.path.relpath('..\\Inventory\\Exports\\New',path)
+    #Exports = os.path.relpath('..\\Inventory\\Exports\\New',path)
+    Exports = str(Path(__file__).resolve().parent.parent)+"/Inventory/Exports/"
 
     def submitImport(self):
         print("loading...")
@@ -423,8 +434,9 @@ class searchItem(Screen):
         super(Screen, self).__init__(**kwargs)
 
         #find correct file path
-        path = os.path.dirname(os.path.abspath(__file__))
-        database = os.path.relpath('..\\sql\\POS_database.db',path)
+        #path = os.path.dirname(os.path.abspath(__file__))
+        path = str(Path(__file__).resolve().parent.parent)+"/sql"
+        database = os.path.join(path,'POS_database.db')
 
         #Opening of the database
         conn = sqlite3.connect(database)
