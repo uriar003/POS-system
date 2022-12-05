@@ -269,6 +269,7 @@
                             root.manager.transition.direction = 'left'
                             root.manager.transition.duration = 1
                             root.manager.current = 'cart'
+                            root.manager.get_screen('cart').getCartData()
                 BoxLayout:
                     orientation: "horizontal"
                     size_hint:(1, 0.75)

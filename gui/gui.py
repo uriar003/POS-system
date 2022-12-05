@@ -72,10 +72,33 @@ class frontPage(Screen):
     pass
 
 class cart(Screen):
-    @staticmethod
-    def getCartData():
-        dataset = screen_manager.get_screen('main').getTransaction()
+    def __init__(self, **kwargs):
+        super(Screen, self).__init__(**kwargs)
+        self.subtotal = 0
+        self.tax = 0
+        self.cart = []
 
+        self.ids.subtotal.text = "0.00"
+
+    def getCartData(self):
+        #make sure this is in main.kv under the Finish button:
+        # 
+        dataset = screen_manager.get_screen('main').getTransaction()
+        self.subtotal = dataset['Subtotal']
+        self.tax = dataset['SalesTax']
+        self.cart = dataset['Cart']
+        #for obj in cart:
+        
+         
+        self.ids.subtotal.text = self.getSubtotal()
+
+    
+    def getSubtotal(self):
+        #In case it ends at a 0, we need it to be xx.00 not xx.
+        out = str(float(self.subtotal))
+        print(out[out.rfind('.')+1:])
+        if len(out[out.rfind('.')+1:]) == 1: out = out+"0"
+        return out
 
 class addInv(Screen):
     pass
@@ -103,9 +126,10 @@ class mainPOS(Screen):
         """
         dataset = {
             "SalesTax" : combined_sales_tax,
-            "Cart"     : self.list_cart,
-
+            "Subtotal" : self.subtotal,
+            "Cart"     : [cell[:8] for cell in self.list_cart] # removes all excess 1's
         }
+        return dataset
 
 
     # frame is the frame to be scanned for barcodes by decode func
@@ -129,8 +153,6 @@ class mainPOS(Screen):
         # query is the item i.e. "apple" sent to the SQL search which would \
         # ideally return a list of lists that I can loop through to populate the search list
         # se is the SearchEngine class from the backend library.
-
-        print("Cart", self.list_cart)
         if(self.priorsearch != self.ids.searchprompt.text):
             self.priorsearch = self.ids.searchprompt.text
 
@@ -145,7 +167,7 @@ class mainPOS(Screen):
             for setOfProd in searched_obj: # Loop through and make a list of lists
                 listOfList.append(setOfProd)
 
-            print(setOfProd)
+            #print(setOfProd)
             # Since the DB is so small, if we search Mario, only 4 items return   
 
             # ****
@@ -297,13 +319,6 @@ class account(Screen):
         item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
        #item.add_widget(IconLeftWidget(icon="soup.png"))
         self.ids.itemlist.add_widget(item)
-
-class cart(Screen):
-    def on_press(self, pressed, list_id):
-        item = TwoLineAvatarListItem(text=f"Sales Report", secondary_text=f"Week_1")
-       #item.add_widget(IconLeftWidget(icon="soup.png"))
-        self.ids.itemlist.add_widget(item)
-
 
 class searchItem(Screen):
     def __init__(self, **kwargs):

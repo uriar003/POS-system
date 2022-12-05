@@ -112,8 +112,8 @@
                             pos: self.pos
 
                 Label:
-                    text: "$0.00"
-
+                    id: subtotal
+                    text: "subtotal"
                     #font properties
                     font_size: self.height/2.5
                     bold:True
@@ -481,7 +481,7 @@
                     pos_hint: {'center_x':.5}
                     #on_release: root.generatereport(self)
                     on_press:
-                        app.cartLogic()
+                        root.getCartData()
 
 
 
