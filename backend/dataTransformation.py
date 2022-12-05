@@ -4,8 +4,17 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql")
 import SQL_Database as sdb
 from datetime import datetime
+from collections import defaultdict
 DOWNLOAD_DIR = str(Path(__file__).resolve().parent.parent)+"/Inventory/Reports/"
 globalHeader = ["ITEM_ID", "NAME", "BARECODE", "PICTURE", "COUNT", "PRICE", "DESCRIPTION"]
+itemsBoughtHeader = ["TRANSACTION_ID", "DATE", "ITEM_ID", "NUMBER", "PRICE", "TAX"]
+money_header = [
+            "TRANSACTION_ID",
+            "DATE",
+            "TRANSACTION_TYPE",
+            "TOTAL_PRICE",
+            "CREDIT_CARD_ID"
+        ]
 
 class LoadData:
     @staticmethod
@@ -95,13 +104,7 @@ class LoadData:
 class SQL_Reports:
     @staticmethod
     def dailyReport():
-        money_header = [
-            "TRANSACTION_ID",
-            "DATE",
-            "TRANSACTION_TYPE",
-            "TOTAL_PRICE",
-            "CREDIT_CARD_ID"
-        ]
+       
         today = datetime.today().strftime("%Y-%m-%d")
         rows = sdb.SQL_Query_table("money_transactions")
         df = pd.DataFrame(rows, columns = money_header)
@@ -112,16 +115,62 @@ class SQL_Reports:
         '''
         This report will take in a Sku, and it will search all orders where the product was sold.
         '''
-        pass
+        today = datetime.today().strftime("%Y-%m-%d")
+        final_header=["ITEM_ID", "NAME", "DESCRIPTION", "SOLD_QUANTITY"]
+        df1 = pd.DataFrame(sdb.SQL_Query_table("items"), columns=globalHeader)
+        df2 = pd.DataFrame(sdb.SQL_Query_table("items_bought"),columns=itemsBoughtHeader)
+        df2_list = df2.drop(["TRANSACTION_ID", "DATE", "PRICE", "TAX"],axis=1).to_numpy().tolist()
+        temp_db = defaultdict(int)
+        for tup in df2_list:
+            temp_db[tup[0]] += tup[1]
+        doc_list = []
+        for _, row in df1.iterrows():
+            if row["ITEM_ID"] in temp_db:
+                doc_list.append([row["ITEM_ID"], row["NAME"], row["DESCRIPTION"], temp_db[row["ITEM_ID"]]])
+        pd.DataFrame(doc_list, columns=final_header).to_excel(DOWNLOAD_DIR+f"Total_Product_Sales_{today}.xlsx", index=False)
+        
+        
+        pass 
 
     @staticmethod
     def transactions():
         """
         This one could take in input for a month range...
-        """
-        pass
+        """ 
+        today = datetime.today().strftime("%Y-%m-%d")
+        rows = sdb.SQL_Query_table("money_transactions")
+        df1 = pd.DataFrame(rows, columns = money_header)
+        print(df1)
+        df1 = df1.query(f'DATE.str.contains("{today}")')[["TRANSACTION_ID", "TOTAL_PRICE"]]
+    
+        
+        
+        rows = sdb.SQL_Query_table("items_bought")
+        df2 = pd.DataFrame(rows, columns=itemsBoughtHeader)
+        df2 = df2.query(f'DATE.str.contains("{today}")')
+
+
+        df3 = pd.DataFrame(sdb.SQL_Query_table("items"), columns=globalHeader)
+        df3 = df3[["ITEM_ID", "NAME"]]
+        orderCost = {int(cell[0]) : cell[1] for cell in df1.to_numpy().tolist()}
+        prodNames = {cell[0] : cell[1] for cell in df3.to_numpy().tolist()}
+        print("\n\n\n\n",orderCost)
+        #print(prodNames)
+        #print(df1)
+        df2["NAME"] = df2["ITEM_ID"].apply(lambda x: prodNames[x])
+        df2["TRANSACTION_TOTAL"] = df2["TRANSACTION_ID"].apply(lambda x: orderCost[x])
+        df2 = df2[["ITEM_ID", "NAME", "NUMBER", "PRICE", "TAX", "TRANSACTION_TOTAL", "TRANSACTION_ID"]]
+        print(df2)
+        df2.to_excel(DOWNLOAD_DIR+f"Todays_sold_products_{today}.xlsx", index=False)
+        
+
+
+
+
+
+        
         
 
 #SQL_Reports.dailyReport()
 #SQL_Reports.totalProductSales()
-#SQL_Reports.transactions()
+SQL_Reports.transactions()
