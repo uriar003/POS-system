@@ -10,7 +10,10 @@ from SQL_Database import see_items
 import win32com.client
 import sqlite3
 from datetime import datetime
+from pathlib import Path
 
+DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
+# Opening of the database
 '''
 ________________________________________________________________________________________________________________________
 _______________________________________________READ ME__________________________________________________________________
@@ -108,7 +111,7 @@ def make_client_invoice(name,email,order,item):
 
 def informations(transaction_id):
     # Opening of the database
-    conn = sqlite3.connect('POS_database.db')
+    conn = sqlite3.connect(DATABASE_FILE)
     items_bought = see_item_bought(transaction_id)
     list_item_id=[]
     list_item=[]
