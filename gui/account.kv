@@ -35,7 +35,7 @@
                 background_color:(87/255,87/255,94/255,1)
 
                 on_press:
-                    root.manager.transition.direction = 'right'
+                    root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
                     root.manager.current = 'main'
 
@@ -95,8 +95,8 @@
                 background_normal:""
                 background_color:(87/255,87/255,94/255,1)
 
-                #on_press: root.manager.current = app.exportLogic("DOWNLOAD")
-                on_press: fileString.text = "Database Exported"
+                on_press: root.sendExport()
+                on_press: fileString.text = "Database Exported to 'Exports'"
             
             Button:
                 text:"EXPORT TEMPLATE"
@@ -108,8 +108,8 @@
                 background_normal:""
                 background_color:(87/255,87/255,94/255,1)
 
-                #on_press: root.manager.current = app.exportLogic("DOWNLOAD_TEMPLATE",)
-                on_press: fileString.text = ("Database Template Exported")
+                on_press: root.sendTExport()
+                on_press: fileString.text = ("Database Template Exported to 'Exports'")
 
     Label:
         id: fileString
