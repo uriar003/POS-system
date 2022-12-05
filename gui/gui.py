@@ -89,6 +89,7 @@ class cart(Screen):
         self.ids.total.text = "0.00"
         self.orderTotal = 0
         self.transactionConfirmed = False
+        self.transactionId = None
         #self.ids.name.text = None
         #self.ids.name.text = None
 
@@ -138,7 +139,6 @@ class cart(Screen):
         name = self.ids.name.text 
         email = self.ids.email.text
         ig.make_client_invoice(name, email, items_bought, list_item) 
-        
 
     def confirmTransaction(self):
         try:
@@ -160,18 +160,25 @@ class cart(Screen):
                 print("working")
                 date = sdb.add_transcation(order_data)
                 self.ids.approval.text = "Transaction\nSuccess!"
-                newId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
-                print("NEWID: ", newId)
+                self.transactionId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
                 # Continue to add items for the order.
                 for product in self.cart:
                     print(product)
                     item_id = product[0]
                     prod = product[1]
                     price = product[5]
-                    productDetails = sdb.format_list([newId, date, item_id, product[-1], price, self.tax])
+                    productDetails = sdb.format_list([self.transactionId, date, item_id, product[-1], price, self.tax])
                     sdb.add_item_boughts2(productDetails)
-        except:
+                
+                #clearcart
+                screen_manager.get_screen('main').cart_deleteall()
+                self.getCartData()
+                self.ids.moneyPaid.text = ""
+                self.ids.changeDue.text = ""
+                self.ids.ccNum.text = ""
+        except Exception as e:
             self.ids.approval.text = f"Failed to transact.\n{self.err}"
+            print(e)
         
 
 class addInv(Screen):
@@ -369,7 +376,7 @@ class mainPOS(Screen):
         self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(0.00)
         self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(0.00)
 
-    def cart_deleteall(self, obj):
+    def cart_deleteall(self):
         #self.subtotal = 0.00
         for i in self.list_cart:
             self.cart_deleteitem(i)
