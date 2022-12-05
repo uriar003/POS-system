@@ -26,9 +26,10 @@
 
             pos_hint:{'center_x':0.5}
             #pos_hint:{'center_y':0.5}
+           
 
             Button:
-                text:"Outside File"
+                text:"Back"
                 font_size:12
 
                 size_hint:(1,1)
@@ -43,7 +44,7 @@
                     root.manager.current = 'front'
 
             Button:
-                text:"Inventory"
+                text:"Add Product"
                 font_size:12
 
                 size_hint:(1,1)
@@ -56,6 +57,21 @@
                     root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
                     root.manager.current = 'account'
+                    
+            Button:
+                text:"Product List"
+                font_size:12
+
+                size_hint:(1,1)
+                height:25
+
+                background_normal:""
+                background_color:(87/255,87/255,94/255,1)
+
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.transition.duration = 1
+                    root.manager.current = 'search'
 
             Button:
                 text:"Reports"
@@ -152,8 +168,8 @@
                 Label:
                     text:"Shopping Cart:"
 
-                    size_hint_y: 0.5
-                    height:20
+                    size_hint_y: 0.2
+                    #height:20
 
                     background_normal:""
                     #background_color:(87/255,87/255,94/255,1)
@@ -165,11 +181,9 @@
                             pos: self.pos
 
                 ScrollView:
-                #Label:
-                    #text: "Whaaaat Happpened Hereee"
                     font_size:15
 
-                    size_hint_y:0.8
+                    size_hint_y:0.75
                     #height:600 #300 was default
 
                     background_normal:""
@@ -188,8 +202,8 @@
                     text:"Sales Tax: $0.00"
                     font_size:15
 
-                    size_hint_y:None
-                    height:20
+                    size_hint_y:0.1
+                    #height:20
 
                     background_normal:""
                     #background_color:(87/255,87/255,94/255,1)
@@ -205,8 +219,8 @@
                     text: "Sub Total: $0.00"
                     font_size:15
 
-                    size_hint_y:None
-                    height:20
+                    size_hint_y:0.1
+                    #height:20
 
                     background_normal:""
                     #background_color:(87/255,87/255,94/255,1)
@@ -222,8 +236,8 @@
                     text: "Total: $0.00"
                     font_size:15
 
-                    size_hint_y:None
-                    height:20
+                    size_hint_y:0.1
+                    #height:20
 
                     background_normal:""
                     #background_color:(87/255,87/255,94/255,1)
@@ -250,7 +264,7 @@
                         font_size: self.width/15
 
                         size_hint:(1,.95)
-                        height:50
+                        height:30
                         #background_normal:""
                         #background_color:(87/255,87/255,94/255,1)
 
@@ -261,7 +275,7 @@
                         font_size: self.width/15
 
                         size_hint:(1,0.95)
-                        height:50
+                        height:30
                         #background_normal:""
                         #background_color:(87/255,87/255,94/255,1)
 
@@ -281,19 +295,19 @@
                     spacing: 5
                     
 
-                    RoundedButton:
-                        text:"Search Item"
-                        font_size: self.width/30
+                    #RoundedButton:
+                        #text:"Search Item"
+                        #font_size: self.width/30
 
                         #font_size: 14
-                        height: 10
+                        #height: 10
                         #background_normal:""
                         #background_color:(87/255,87/255,94/255,1)
 
-                        on_press:
-                            root.manager.transition.direction = 'left'
-                            root.manager.transition.duration = 1
-                            root.manager.current = 'search'
+                        #on_press:
+                            #root.manager.transition.direction = 'left'
+                            #root.manager.transition.duration = 1
+                            #root.manager.current = 'search'
 
 <RoundedButton@Button>
     background_color: (0,0,0,0)
