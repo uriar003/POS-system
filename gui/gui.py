@@ -290,11 +290,26 @@ class account(Screen):
         except:
             pass
 
+    #current path
+    path = os.path.dirname(os.path.abspath(__file__))
+    #path to Exports folder
+    Exports = os.path.relpath('..\\Inventory\\Exports\\New',path)
+
     def submitImport(self):
-        print ("loading...")
+        print("loading...")
         print(self.selectedFile)
         LoadData.load_inventory(self.selectedFile)
         print("Inventory loaded")
+
+    def sendExport(self):
+        print("generating...")
+        LoadData.export_inventory(self.Exports)
+        print("Database Exported")
+    
+    def sendTExport(self):
+        print("generating...")
+        LoadData.export_template(self.Exports)
+        print("Template Exported")
         
 class cart(Screen):
     def on_press(self, pressed, list_id):
