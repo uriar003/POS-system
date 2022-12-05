@@ -4,7 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql")
 import SQL_Database as sdb
 from datetime import datetime
-
+DOWNLOAD_DIR = str(Path(__file__).resolve().parent.parent)+"/Inventory/Reports/"
 globalHeader = ["ITEM_ID", "NAME", "BARECODE", "PICTURE", "COUNT", "PRICE", "DESCRIPTION"]
 
 class LoadData:
@@ -95,8 +95,18 @@ class LoadData:
 class SQL_Reports:
     @staticmethod
     def dailyReport():
-        pass
-
+        money_header = [
+            "TRANSACTION_ID",
+            "DATE",
+            "TRANSACTION_TYPE",
+            "TOTAL_PRICE",
+            "CREDIT_CARD_ID"
+        ]
+        today = datetime.today().strftime("%Y-%m-%d")
+        rows = sdb.SQL_Query_table("money_transactions")
+        df = pd.DataFrame(rows, columns = money_header)
+        df = df.query(f'DATE.str.contains("{today}")')
+        df.to_excel(DOWNLOAD_DIR+f"Daily_Report_{today}.xlsx", index=False)
     @staticmethod
     def totalProductSales():
         '''
@@ -112,29 +122,6 @@ class SQL_Reports:
         pass
         
 
-
-###
-#LoadData.print_inventory()
-
-def run():
-    fn = '../JedData.xlsx'
-
-    LoadData.load_inventory(fn)
-    #df = pd.DataFrame(LoadData.get_inventory(), columns=globalHeader)
-    #print(df)
-#LoadData.export_template()
-#run()
-#df = pd.DataFrame(LoadData.get_inventory(), columns=header)#
-#print(df)
-#run()
-#LoadData.export_inventory()
-
-"""today = datetime.today().date()
-cost = 20
-tax = .0775
-total = float('%.2f' % (cost*(1+tax)))
-transaction_details = sdb.format_list([today, total, "SOLD"])
-#print(x)
-newId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
-z = sdb.SQL_Query_table("items")"""
-#run()
+#SQL_Reports.dailyReport()
+#SQL_Reports.totalProductSales()
+#SQL_Reports.transactions()

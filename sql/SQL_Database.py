@@ -121,6 +121,8 @@ def delete_values(table, attribut, value):
 def SQL_Query_with_target(target, request):
     target = target
     command = "SELECT", "FROM", "WHERE"
+    print(    request,
+        (target,),)
     rows = cursor.execute(
         request,
         (target,),
