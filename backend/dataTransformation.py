@@ -103,13 +103,13 @@ class LoadData:
 
 class SQL_Reports:
     @staticmethod
-    def dailyReport():
-       
+    def dailyReport():     
         today = datetime.today().strftime("%Y-%m-%d")
         rows = sdb.SQL_Query_table("money_transactions")
         df = pd.DataFrame(rows, columns = money_header)
         df = df.query(f'DATE.str.contains("{today}")')
         df.to_excel(DOWNLOAD_DIR+f"Daily_Report_{today}.xlsx", index=False)
+    
     @staticmethod
     def totalProductSales():
         '''
@@ -129,9 +129,6 @@ class SQL_Reports:
                 doc_list.append([row["ITEM_ID"], row["NAME"], row["DESCRIPTION"], temp_db[row["ITEM_ID"]]])
         pd.DataFrame(doc_list, columns=final_header).to_excel(DOWNLOAD_DIR+f"Total_Product_Sales_{today}.xlsx", index=False)
         
-        
-        pass 
-
     @staticmethod
     def transactions():
         """
@@ -140,7 +137,6 @@ class SQL_Reports:
         today = datetime.today().strftime("%Y-%m-%d")
         rows = sdb.SQL_Query_table("money_transactions")
         df1 = pd.DataFrame(rows, columns = money_header)
-        print(df1)
         df1 = df1.query(f'DATE.str.contains("{today}")')[["TRANSACTION_ID", "TOTAL_PRICE"]]
     
         
@@ -154,13 +150,13 @@ class SQL_Reports:
         df3 = df3[["ITEM_ID", "NAME"]]
         orderCost = {int(cell[0]) : cell[1] for cell in df1.to_numpy().tolist()}
         prodNames = {cell[0] : cell[1] for cell in df3.to_numpy().tolist()}
-        print("\n\n\n\n",orderCost)
+        #print("\n\n\n\n",orderCost)
         #print(prodNames)
         #print(df1)
         df2["NAME"] = df2["ITEM_ID"].apply(lambda x: prodNames[x])
         df2["TRANSACTION_TOTAL"] = df2["TRANSACTION_ID"].apply(lambda x: orderCost[x])
         df2 = df2[["ITEM_ID", "NAME", "NUMBER", "PRICE", "TAX", "TRANSACTION_TOTAL", "TRANSACTION_ID"]]
-        print(df2)
+        #print(df2)
         df2.to_excel(DOWNLOAD_DIR+f"Todays_sold_products_{today}.xlsx", index=False)
         
 
@@ -173,4 +169,4 @@ class SQL_Reports:
 
 #SQL_Reports.dailyReport()
 #SQL_Reports.totalProductSales()
-SQL_Reports.transactions()
+#SQL_Reports.transactions()
