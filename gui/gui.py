@@ -77,28 +77,64 @@ class cart(Screen):
         self.subtotal = 0
         self.tax = 0
         self.cart = []
-
-        self.ids.subtotal.text = "0.00"
+        self.ids.total.text = "0.00"
+        self.transactionConfirmed = False
+        #self.ids.name.text = None
+        #self.ids.name.text = None
 
     def getCartData(self):
         #make sure this is in main.kv under the Finish button:
-        # 
+        # root.manager.get_screen('cart').getCartData()
         dataset = screen_manager.get_screen('main').getTransaction()
         self.subtotal = dataset['Subtotal']
         self.tax = dataset['SalesTax']
         self.cart = dataset['Cart']
+        self.orderTotal = float(self.subtotal *(1+ self.tax))
+        self.isCC = False
+        self.isCash = False
         #for obj in cart:
         
          
-        self.ids.subtotal.text = self.getSubtotal()
+        self.ids.total.text = self.getDollar(self.orderTotal)
 
-    
-    def getSubtotal(self):
+    def cashTransaction(self):
+        try:
+            customerPaid = int(self.ids.moneyPaid.text)
+            changeDue = self.getDollar(self.orderTotal - customerPaid)
+            self.ids.changeDue.text = changeDue
+            self.isCC = False
+            self.isCash = True
+            print("Cash Transaction")
+        except: pass
+
+    def ccTransaction(self):
+        print(self.ids.ccNum.text)
+        if len(str(self.ids.ccNum.text)) > 0:
+            self.ccVerificationNum = self.ids.ccNum.text
+            self.isCC = True
+            self.isCash = False
+            print("CC Transaction")
+
+
+
+    def getDollar(self,variable):
         #In case it ends at a 0, we need it to be xx.00 not xx.
-        out = str(float(self.subtotal))
-        print(out[out.rfind('.')+1:])
+        out = str("%.2f" % variable)
         if len(out[out.rfind('.')+1:]) == 1: out = out+"0"
-        return out
+        return "$"+out
+
+    def sendEmail(self):       
+        name = self.ids.name.text 
+        email = self.ids.email.text 
+        print(name, email)
+
+    def confirmTransaction(self):
+        err = "Needs cash or CC."
+        if False:
+            pass
+        else:
+            self.ids.approval.text = f"Failed to transact.\n{err}"
+        
 
 class addInv(Screen):
     pass

@@ -112,8 +112,8 @@
                             pos: self.pos
 
                 Label:
-                    id: subtotal
-                    text: "subtotal"
+                    id: total
+                    text: "0.00"
                     #font properties
                     font_size: self.height/2.5
                     bold:True
@@ -196,6 +196,7 @@
                             pos: self.pos
 
                 TextInput:
+                    id: name
                     hint_text: "Name Here"
 
                     #font properties
@@ -240,6 +241,8 @@
                             pos: self.pos
 
                 TextInput:
+                
+                    id:email
                     hint_text: "Email Here"
 
                     #font properties
@@ -306,9 +309,9 @@
                     padding: 2
                     spacing: 5
 
-                    Label:
+                    Button:
                         text: "Cash"
-
+                        on_press: root.cashTransaction()
                         #font properties
                         font_size: self.height/2.5
                         bold:True
@@ -328,6 +331,7 @@
                                 pos: self.pos
 
                     TextInput:
+                        id: moneyPaid
                         hint_text: "$0.00"
 
                         #font properties
@@ -349,9 +353,10 @@
                     padding: 2
                     spacing: 5
 
-                    Label:
+                    Button:
                         text: "Credit Card Id:"
-
+                        on_press:
+                            root.ccTransaction()
                         #font properties
                         font_size: self.height/2.5
                         bold:True
@@ -371,6 +376,7 @@
                                 pos: self.pos
 
                     TextInput:
+                        id:ccNum
                         hint_text: "*****"
 
                         #font properties
@@ -424,8 +430,9 @@
                                 size: self.size
                                 pos: self.pos
 
-                    TextInput:
-                        hint_text: "$0.00"
+                    Label:
+                        id:changeDue
+                        text: "$0.00"
 
                         #font properties
                         font_size: self.height/2.5
@@ -447,14 +454,16 @@
                     spacing: 5
 
                     Button:
-                        text: "Click to Pay"
+                        text: "Click to Finalize"
                         font_size: self.height/2.5
-
+                        on_press:
+                            root.confirmTransaction()
                         #size of Label
                         size_hint_x:0.4
 
-                    TextInput:
-                        hint_text: "Approved?"
+                    Label:
+                        id: approval
+                        text: "Approved?"
 
                         #font properties
                         font_size: self.height/2.5
@@ -480,8 +489,7 @@
                     font_size:20
                     pos_hint: {'center_x':.5}
                     #on_release: root.generatereport(self)
-                    on_press:
-                        root.getCartData()
+                    on_press: root.sendEmail()
 
 
 
