@@ -17,15 +17,18 @@ from kivymd.app import MDApp
 from kivymd.uix.list import *
 from kivymd.uix.datatables import MDDataTable
 
+import sqlite3
+
 import datetime
 from pathlib import Path
 import os, sys #for file paths
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/backend") #Parent directory
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql") #Parent directory
+
 #import sql.SQL_Database
 import SQL_Database as sdb
+import Invoices_generating as ig
 
-import sqlite3
 import cv2                          # OpenCV is under Apache License 2.0, so it is free to use commercially
 import numpy as np
 from pyzbar.pyzbar import decode    # PyzBar is under the MIT License, which among other things permits modification and re-sale
@@ -125,10 +128,13 @@ class cart(Screen):
         if len(out[out.rfind('.')+1:]) == 1: out = out+"0"
         return "$"+out
 
-    def sendEmail(self):       
+    def sendEmail(self):
+        #make_client_invoice('Julien Toulon', 'toulon.julien@gmail.com',items_bought,list_item)
+        items_bought, list_item=ig.informations('1')
         name = self.ids.name.text 
-        email = self.ids.email.text 
-        print(name, email)
+        email = self.ids.email.text
+        ig.make_client_invoice(name, email, items_bought, list_item) 
+        
 
     def confirmTransaction(self):
         try:
@@ -148,8 +154,18 @@ class cart(Screen):
                 print(total, type(total))
                 order_data = [saleType,total , cc]
                 print("working")
-                sdb.add_transcation(order_data)
-                self.ids.approval.text = "Transaction Success!"
+                date = sdb.add_transcation(order_data)
+                self.ids.approval.text = "Transaction\nSuccess!"
+                newId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
+                print("NEWID: ", newId)
+                # Continue to add items for the order.
+                for product in self.cart:
+                    print(product)
+                    item_id = product[0]
+                    prod = product[1]
+                    price = product[5]
+                    productDetails = sdb.format_list([newId, date, item_id, product[-1], price, self.tax])
+                    sdb.add_item_boughts2(productDetails)
         except:
             self.ids.approval.text = f"Failed to transact.\n{self.err}"
         

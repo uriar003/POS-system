@@ -257,6 +257,11 @@ def search_order(customer_id,dateb,datee):
 
 # item_bought functions
 
+def add_item_boughts2(values):
+    add_values('items_bought', '(TRANSACTION_ID,DATE,ITEM_ID,NUMBER,PRICE,TAX)', values)
+    
+
+
 def add_item_boughts(values):
     print(values)
     print(type(values))
@@ -319,7 +324,6 @@ def see_item_bought(values):
 # money_transactions functions
 
 def add_transcation(values):
-    print('h')
     date = str(datetime.now())
     #values = values.split(',')
     date =  date
@@ -327,9 +331,8 @@ def add_transcation(values):
     values.insert(0, date)
     #values = ','.join(values)
     values = format_list(values)
-    print(values)
     add_values('money_transactions', '(DATE,TRANSACTION_TYPE,TOTAL_PRICE,CREDIT_CARD_ID)', values)
-
+    return date
 
 def calculate_balance(dateb, datee):
     balance = 0

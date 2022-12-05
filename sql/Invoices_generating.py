@@ -7,7 +7,7 @@ from SQL_Database import search_customer
 from SQL_Database import see_item_bought
 from SQL_Database import search_order
 from SQL_Database import see_items
-import win32com.client
+#import win32com.client
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -30,7 +30,7 @@ ________________________________________________________________________________
 '''
 
 
-def make_client_invoice(name,email,order,item):
+def make_client_invoice(name,email,order,list_item):
     list_number=[]
     for element in order:
         list_number.append(element[3])
@@ -45,7 +45,7 @@ def make_client_invoice(name,email,order,item):
     #ord = order.translate(str.maketrans('', '', ''.join(chars)))
     #order=ord.split(',')
     document=Document()
-    document.add_picture('brand_logo.png', width=Inches(1))
+    document.add_picture(str(Path(__file__).resolve().parent)+'/brand_logo.png', width=Inches(1))
     document.add_paragraph('POS System Team')
     document.add_paragraph('333 S Twin Oaks Valley Rd')
     document.add_paragraph('San Marcos, CA 92096')
@@ -106,7 +106,7 @@ def make_client_invoice(name,email,order,item):
     document.add_paragraph('Sincerely')
     document.add_paragraph('POS system team')
 
-    document.save(f'receipt.docx')
+    document.save(str(Path(__file__).resolve().parent.parent)+'/exports/receipt.docx')
 
 
 def informations(transaction_id):
@@ -123,7 +123,7 @@ def informations(transaction_id):
 
     return items_bought,list_item
 
-
+"""
 def docx_to_pdf(src, dst):
     word = win32com.client.Dispatch("Word.Application")
     wdFormatPDF = 17
@@ -140,14 +140,14 @@ def send_email(name, email, attachment):
     mail.Body = f'Dear {name}, Please find attached invoice'
     mail.Attachments.Add(attachment)
     mail.Send()
+"""
 
+#items_bought, list_item=informations('1')
+#make_client_invoice('Julien Toulon', 'toulon.julien@gmail.com',items_bought,list_item)
 
-items_bought, list_item=informations('1')
-make_client_invoice('Julien Toulon', 'toulon.julien@gmail.com',items_bought,list_item)
-
-src=r'C:\Users\Julien\Documents\CS436\Clients' + r'\receipt.docx'
-dst=r'C:\Users\Julien\Documents\CS436\Clients' + r'\receipt.pdf'
-docx_to_pdf(src,dst)
+#src=r'C:\Users\Julien\Documents\CS436\Clients' + r'\receipt.docx'
+#dst=r'C:\Users\Julien\Documents\CS436\Clients' + r'\receipt.pdf'
+#docx_to_pdf(src,dst)
 
 
 
