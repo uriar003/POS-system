@@ -72,7 +72,10 @@ class frontPage(Screen):
     pass
 
 class cart(Screen):
-    pass
+    @staticmethod
+    def getCartData():
+        dataset = screen_manager.get_screen('main').getTransaction()
+
 
 class addInv(Screen):
     pass
@@ -83,7 +86,7 @@ class mainPOS(Screen):
         # list to manage summary items amt list on the right above the sales totals
         self.list_cart = []
         self.list_searchresults = []
-        
+        self.subtotal = 0
         # constantly call camera for barcode frames
         #Clock.schedule_interval(self.tickerscanner, 1.0/2.0)
         # constantly call search bar for new query
@@ -92,6 +95,18 @@ class mainPOS(Screen):
         self.prior = None           # bool to prevent barcode over-rescanning
         self.priorsearch = None     # used to stop search if query is the same
         self.se = SearchEngine()
+
+    def getTransaction(self):
+        """
+        Returns all the data needed for the final transaction screen
+        in a dictionary
+        """
+        dataset = {
+            "SalesTax" : combined_sales_tax,
+            "Cart"     : self.list_cart,
+
+        }
+
 
     # frame is the frame to be scanned for barcodes by decode func
     def tickerscanner(self, *args):
@@ -232,7 +247,7 @@ class mainPOS(Screen):
                             self.list_cart.remove(i)
 
         self.ids.mdlCART.clear_widgets()
-        subtotal = 0.00
+        self.subtotal = 0.00
 
         for i in self.list_cart:
             # create an item to be added to MDList with evident properties
@@ -243,11 +258,11 @@ class mainPOS(Screen):
                 )
             mdlitem.bind(on_release = self.cart_deleteall)
             self.ids.mdlCART.add_widget(mdlitem)
-            subtotal += i[5] * i[7]
+            self.subtotal += i[5] * i[7]
 
-        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(subtotal * combined_sales_tax)
-        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(subtotal)
-        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(subtotal + (subtotal * combined_sales_tax))
+        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(self.subtotal * combined_sales_tax)
+        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(self.subtotal)
+        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(self.subtotal + (self.subtotal * combined_sales_tax))
 
     def cart_deleteitem(self, obj):
         self.list_cart.clear()
@@ -260,7 +275,7 @@ class mainPOS(Screen):
 
     def cart_deleteall(self, obj):
 
-        subtotal = 0.00
+        #self.subtotal = 0.00
 
         for i in self.list_cart:
             if(obj.secondary_text == str(i[0]) and (i[7] > 1)):
@@ -401,6 +416,14 @@ class posApp(MDApp):
             return ("adminMenu")
         # Else return nothing to do nothing, possibly later add text saying invalid
         return "front"
-        
+
+    def cartLogic(self):
+        """
+        Once run, it will load the information from mainPOS
+        over to the cart.
+        """
+        z = screen_manager.get_screen('main').list_cart
+        print(z)
+
 if __name__ == '__main__':
     posApp().run()

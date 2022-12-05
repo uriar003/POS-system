@@ -41,6 +41,7 @@
                         root.manager.transition.direction = 'right'
                         root.manager.transition.duration = 1
                         root.manager.current = 'main'
+                        
 
                 Label:
                     text:" "
@@ -478,9 +479,9 @@
                     text:"Click to Generate Receipt"
                     font_size:20
                     pos_hint: {'center_x':.5}
-
                     #on_release: root.generatereport(self)
-
+                    on_press:
+                        app.cartLogic()
 
 
 
