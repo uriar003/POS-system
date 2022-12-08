@@ -23,6 +23,9 @@
             Button:
                 text:"Back"
                 font_size:12
+                bold:True
+                outline_color:(0,0,0)
+                outline_width: 1
 
                 size_hint:(1,1)
                 height:25
@@ -38,6 +41,9 @@
             Button:
                 text:"Add Product"
                 font_size:12
+                bold:True
+                outline_color:(0,0,0)
+                outline_width: 1
 
                 size_hint:(1,1)
                 height:25
@@ -53,6 +59,9 @@
             Button:
                 text:"Product List"
                 font_size:12
+                bold:True
+                outline_color:(0,0,0)
+                outline_width: 1
 
                 size_hint:(1,1)
                 height:25
@@ -68,6 +77,9 @@
             Button:
                 text:"Reports"
                 font_size:12
+                bold:True
+                outline_color:(0,0,0)
+                outline_width: 1
 
                 size_hint:(1,1)
                 height:25
@@ -99,6 +111,9 @@
             Button:
                 text:"Shopping Cart"
                 font_size:12
+                bold:True
+                outline_color:(0,0,0)
+                outline_width: 1
 
                 size_hint:(1,1)
                 height:25
@@ -113,6 +128,9 @@
             Button:
                 text:"Log Out"
                 font_size:12
+                bold:True
+                outline_color:(0,0,0)
+                outline_width: 1
 
                 size_hint:(1,1)
                 height:25
@@ -164,6 +182,10 @@
 
                 Label:
                     text:"Shopping Cart:"
+                    font_size: self.height/2.5
+                    bold:True
+                    outline_color:(0,0,0)
+                    outline_width: 1
 
                     size_hint_y: 0.1
 
@@ -177,7 +199,7 @@
                             pos: self.pos
 
                 ScrollView:
-                    font_size:15
+                    font_size:self.width/8
 
                     size_hint_y: 1
 
@@ -194,10 +216,12 @@
                 Label:
                     id: lblstax
                     text:"Sales Tax: $0.00"
-                    font_size:15
+                    font_size:self.height/2.5
+                    bold:True
+                    outline_color:(0,0,0)
+                    outline_width: 1
 
                     size_hint_y:0.1
-
                     background_normal:""
                     canvas.before:
                         Color:
@@ -209,7 +233,10 @@
                 Label:
                     id: lblsubtotal
                     text: "Sub Total: $0.00"
-                    font_size:15
+                    font_size:self.height/2.5
+                    bold:True
+                    outline_color:(0,0,0)
+                    outline_width: 1
 
                     size_hint_y:0.1
                     #height:20
@@ -225,8 +252,10 @@
                 Label:
                     id: lbltotal
                     text: "Total: $0.00"
-                    font_size:15
+                    font_size:self.height/2.5
                     bold:True
+                    outline_color:(0,0,0)
+                    outline_width: 1
 
                     size_hint_y:0.1
 
@@ -253,7 +282,10 @@
 
                     Button:
                         text:"Clear Cart"
-                        font_size: self.width/15
+                        font_size: self.width/8
+                        bold:True
+                        outline_color:(0,0,0)
+                        outline_width: 1
 
                         #size_hint:(1,0.25)
                         #background_normal:""
@@ -271,7 +303,10 @@
 
                     Button:
                         text:"Finish"
-                        font_size: self.width/15
+                        font_size: self.width/8
+                        bold:True
+                        outline_color:(0,0,0)
+                        outline_width: 1
 
                         #size_hint:(1,0.25)
                         #background_normal:""
