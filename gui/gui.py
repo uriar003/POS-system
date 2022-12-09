@@ -191,10 +191,10 @@ class mainPOS(Screen):
         self.list_searchresults = []
         self.subtotal = 0
         # constantly call camera for barcode frames
-        #Clock.schedule_interval(self.tickerscanner, 1.0/2.0)
+        # Clock.schedule_interval(self.tickerscanner, 1.0/2.0)
         # constantly call search bar for new query
-        #Clock.schedule_interval(self.tickersearch, 1.0/2.0)
-        #self.cam = cv2.VideoCapture(1)
+        # Clock.schedule_interval(self.tickersearch, 1.0/2.0)
+        # self.cam = cv2.VideoCapture(1)
         self.prior = None           # bool to prevent barcode over-rescanning
         self.priorsearch = None     # used to stop search if query is the same
         self.se = SearchEngine()
@@ -257,7 +257,7 @@ class mainPOS(Screen):
             # [id, name, price, barcode]
             self.list_searchresults = listOfList[0]
 
-            # clear to repopulate search results
+            # clear visual to repopulate search results
             self.ids.mdlSEARCHRESULTS.clear_widgets()
 
             for r in self.list_searchresults:
@@ -268,30 +268,35 @@ class mainPOS(Screen):
                     )
                 rl.bind(on_release = self.addsearchitem)
                 self.ids.mdlSEARCHRESULTS.add_widget(rl)
-
-            # as of now I just want it to work as proof of concept, so no automatic search updating mid-typing,
-            #       only update results from SQL searcher upon button press
         else:
             print("Search not refreshed, query hasn't changed!")
 
     def addscanitem(self, frame):
+        flag_exist = False
         # note that decode gets ALL barcodes in a frame, but we only want the first one detected
         bdata = decode(frame)[0]
         bliteral = bdata.data.decode('utf-8')
-        print("Adding TYPE:", bdata.type, "| DATA:", bliteral)
 
         # placeholder for barcode returning from SQL a list of relevant item properties
         # params: item id, name, barcode, picture, number in stock, price, desc, item in cart at first add
         # SQLitem = [ 27, "Name", barcode, "picture.jfif", num in stock, price, desc, 1 ]
         retSQL = sdb.qr_code_item(bliteral)
-        print(retSQL)
+        print("Adding", bliteral)
+        print("retrieved:", retSQL)
         # guard if barcode does not return a matching item result
         if(len(retSQL) > 0):
             SQLitem = [
                 retSQL[0][0], retSQL[0][1], retSQL[0][2], retSQL[0][3], retSQL[0][4], retSQL[0][5], retSQL[0][6], 1
                 ]
 
-            self.update_cart(SQLitem, True)
+            for e in self.list_cart:
+                if(SQLitem[2] == e[2]):
+                    print("exists")
+                    e[7] += 1
+                    flag_exist = True
+                    break
+            if(flag_exist == False):
+                self.list_cart.append(SQLitem)
         else:
             print("no item matching barcode")
             
@@ -309,47 +314,35 @@ class mainPOS(Screen):
             )
             yb.bind(on_press = pup_noitemfound.dismiss)
             pup_noitemfound.open()
+        
+        self.update_cart()
 
-    def addsearchitem(self, obj):
+    def addsearchitem(self, search_item):
+        flag_exist = False
         print("Cart:", self.list_cart)
         for i in self.list_searchresults:
-            # if clicked mdlist elem's id equals item id in internal list, then add to cart
-            # this is a scuffed way to retain the SQL data, as ThreeLineCompactItem cannot retain all data
-            if(obj.tertiary_text == str(i[0])):
-                i.append(1)
-                self.update_cart(i, True)
+            # if clicked mdlist tertiary text (id) equals item id in internal list, then add to cart
+            # ThreeLineCompactItem cannot retain SQLitem (obj) data so I have to do this
+            if(search_item.tertiary_text == str(i[0])):
+                print("matched")
+                # now compare the search sqlitem if it exists in the cart already
+                for e in self.list_cart:
+                    if(e[0] == i[0]):
+                        print("exists")
+                        i[7] += 1
+                        flag_exist = True
+                        break
+                if(flag_exist == False):
+                    i.append(1) # add index amt to end
+                    self.list_cart.append(i)
                 break
 
-    def update_cart(self, SQLitem, Add):
-        print(SQLitem)
-        itemAdded = False
+        self.update_cart()
 
-        if(Add == True):
-            # if there aren't any items in cart, unconditionally add an item, this is an edge case
-            if(len(self.list_cart) > 0):
-                for i in self.list_cart:
-                    # if barcode is already in list, add to existing elem count
-                    if(SQLitem[0] == i[0]):
-                        i[7] += 1
-                        itemAdded = True
-            else:
-                self.list_cart.append(SQLitem)
-                itemAdded = True
-
-            if itemAdded == False:
-                self.list_cart.append(SQLitem)
-        elif(Add == False):
-            if(len(self.list_cart) > 0):
-                # params: Item_id, Picture, Number_in_stock, Price, Description, barcode, current num in cart
-                for i in self.list_cart:
-                    if(SQLitem[0] == i[0]):
-                        if(i[7] > 0):
-                            i[7] -= 1
-                        else:
-                            self.list_cart.remove(i)
-
+    def update_cart(self):
+        print("Cart", self.list_cart)
         self.ids.mdlCART.clear_widgets()
-        self.subtotal = 0.00
+        self.subtotal = 0.00        
 
         for i in self.list_cart:
             # create an item to be added to MDList with evident properties
@@ -358,7 +351,7 @@ class mainPOS(Screen):
                 secondary_text = str(i[0]),                                     # item ID (needed to index)
                 tertiary_text = str(currency_type) + "{:.2f}".format(i[5])      # price
                 )
-            mdlitem.bind(on_release = self.cart_deleteall)
+            mdlitem.bind(on_release = self.cart_deleteitem)
             self.ids.mdlCART.add_widget(mdlitem)
             self.subtotal += i[5] * i[7]
 
@@ -367,26 +360,18 @@ class mainPOS(Screen):
         self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(self.subtotal + (self.subtotal * combined_sales_tax))
 
     def cart_deleteitem(self, obj):
-        self.list_cart.clear()
-        self.update_cart(self.list_cart, False)
+        for i in self.list_cart:
+            if(obj.secondary_text == str(i[0])):
+                if(i[7] > 1):
+                    i[7] -= 1
+                else:
+                    self.list_cart.remove(i)
 
-        print("deleting all items in", self, " | ", obj)
-        self.ids.lblstax.text = "Sales Tax: " + currency_type + "{:.2f}".format(0.00)
-        self.ids.lblsubtotal.text = "Sub Total: " + currency_type + "{:.2f}".format(0.00)
-        self.ids.lbltotal.text = "Total: " + currency_type + "{:.2f}".format(0.00)
+        self.update_cart()
 
     def cart_deleteall(self,obj=None):
-        #self.subtotal = 0.00
-        for i in self.list_cart:
-            self.cart_deleteitem(i)
-            """if(obj.secondary_text == str(i[0]) and (i[7] > 1)):
-                break
-            elif(obj.secondary_text == str(i[0]) and (i[7] == 1)):
-                self.list_cart.remove(i)
-                break
-            self.list_cart.remove(i)
-            self.update_cart(i, False)
-            """
+        self.list_cart.clear()
+        self.update_cart()
 
 class reports(Screen):
     @staticmethod
