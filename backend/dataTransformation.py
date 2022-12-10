@@ -9,7 +9,7 @@ import os
 dir = os.getcwd()
 i = dir.rfind('/')
 DOWNLOAD_DIR = dir[:i]
-#DOWNLOAD_DIR = str(Path(__file__).resolve().parent.parent)+"/Inventory/Reports/"
+DOWNLOAD_DIR += "/Inventory/Reports/"
 globalHeader = ["ITEM_ID", "NAME", "BARECODE", "PICTURE", "COUNT", "PRICE", "DESCRIPTION"]
 itemsBoughtHeader = ["TRANSACTION_ID", "DATE", "ITEM_ID", "NUMBER", "PRICE", "TAX"]
 money_header = [
