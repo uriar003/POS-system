@@ -111,11 +111,14 @@ class cart(Screen):
     def reset(self):
         self.ids.approval.text = "Approved?"
 
-        
+
     def cashTransaction(self):
         try:
             customerPaid = int(self.ids.moneyPaid.text)
             changeDue = self.getDollar(self.orderTotal - customerPaid)
+            if self.orderTotal - customerPaid > 0:
+                self.ids.changeDue.text = f"Collect\n{changeDue}\nmore cash."
+                raise Exception
             self.ids.changeDue.text = changeDue
             self.isCC = False
             self.isCash = True
