@@ -495,15 +495,17 @@
                     on_press:
                         root.manager.transition.direction = 'right'
                         root.manager.transition.duration = 1
+                        root.reset()
                         root.manager.current = 'main'
-
                     
                 Button:
                     text:"Click to Generate Receipt"
                     font_size:20
                     pos_hint: {'center_x':.5}
                     #on_release: root.generatereport(self)
-                    on_press: root.sendEmail()
+                    on_press:
+                        root.reset()
+                        root.sendEmail()
 
 
 

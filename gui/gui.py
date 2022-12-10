@@ -108,6 +108,10 @@ class cart(Screen):
          
         self.ids.total.text = self.getDollar(self.orderTotal)
 
+    def reset(self):
+        self.ids.approval.text = "Approved?"
+
+        
     def cashTransaction(self):
         try:
             customerPaid = int(self.ids.moneyPaid.text)
