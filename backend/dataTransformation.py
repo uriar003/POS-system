@@ -5,7 +5,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql")
 import SQL_Database as sdb
 from datetime import datetime
 from collections import defaultdict
-DOWNLOAD_DIR = str(Path(__file__).resolve().parent.parent)+"/Inventory/Reports/"
+import os
+dir = os.getcwd()
+i = dir.rfind('/')
+DOWNLOAD_DIR = dir[:i]
+#DOWNLOAD_DIR = str(Path(__file__).resolve().parent.parent)+"/Inventory/Reports/"
 globalHeader = ["ITEM_ID", "NAME", "BARECODE", "PICTURE", "COUNT", "PRICE", "DESCRIPTION"]
 itemsBoughtHeader = ["TRANSACTION_ID", "DATE", "ITEM_ID", "NUMBER", "PRICE", "TAX"]
 money_header = [

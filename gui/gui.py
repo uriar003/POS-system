@@ -19,13 +19,14 @@ from kivymd.uix.datatables import MDDataTable
 
 import sqlite3
 
-import datetime
 from pathlib import Path
 import os, sys #for file paths
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/backend") #Parent directory
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql") #Parent directory
-
-PARENTDIR = str(Path(__file__).resolve().parent.parent)
+dir = os.getcwd()
+i = dir.rfind('/')
+PARENTDIR = dir[:i]
+#PARENTDIR = str(Path(__file__).resolve().parent.parent)
 
 #import sql.SQL_Database
 import dataTransformation as dt
@@ -389,6 +390,10 @@ class reports(Screen):
 class account(Screen):
     #placeholder for a selected file path
     selectedFile = ''
+    dir = os.getcwd()
+    i = dir.rfind('/')
+    exports = PARENTDIR
+    print(exports)
     def selected(self, filename):
         try:
             #return file path on click
@@ -400,10 +405,10 @@ class account(Screen):
 
     #current path
     #path = os.path.dirname(os.path.abspath(__file__))
-    #path to Exports folder
-    #Exports = os.path.relpath('..\\Inventory\\Exports\\New',path)
-    Exports = str(Path(__file__).resolve().parent.parent)+"/Inventory/Exports/"
-
+    #path to exports folder
+    #exports = os.path.relpath('..\\Inventory\\exports\\New',path)
+    #exports = str(Path(__file__).resolve().parent.parent)+"/Inventory/exports/"
+    
     def submitImport(self):
         print("loading...")
         print(self.selectedFile)
@@ -412,12 +417,12 @@ class account(Screen):
 
     def sendExport(self):
         print("generating...")
-        LoadData.export_inventory(self.Exports)
+        LoadData.export_inventory(self.exports)
         print("Database Exported")
     
     def sendTExport(self):
         print("generating...")
-        LoadData.export_template(self.Exports)
+        LoadData.export_template(self.exports)
         print("Template Exported")
 
 class searchItem(Screen):
@@ -430,24 +435,22 @@ class searchItem(Screen):
         database = os.path.join(path,'POS_database.db')
 
         #Opening of the database
-        conn = sqlite3.connect(database)
+        #conn = sqlite3.sdb.connect(database)
 
-        #Creation of the cursor ("robot to do database stuff for you")
-        cursor = conn.cursor()
+        #Creation of the sdb.cursor ("robot to do database stuff for you")
+        #cursor = sdb.conn.sdb.cursor()
         #print("Database opened successfully") #WILL CREATE A NEW FILE IF NOT FOUND
 
         #store row data into records variable before building table
-        cursor.execute("SELECT ITEM_ID, NAME, NUMBER, PRICE, DESCRIPTION FROM items")
-        conn.commit()
+        sdb.cursor.execute("SELECT ITEM_ID, NAME, NUMBER, PRICE, DESCRIPTION FROM items")
+        sdb.conn.commit()
         ##testing query
-        #for row in cursor:
+        #for row in sdb.cursor:
             #print(row)
-        records = cursor.fetchall()
+        records = sdb.cursor.fetchall()
         #print(records)
 
-        #close cursor and connection
-        cursor.close()
-        conn.close()       
+ 
 
         table = MDDataTable(
                 pos_hint = {'center_x': 0.5, 'center_y': 0.5},
@@ -525,3 +528,6 @@ class posApp(MDApp):
 
 if __name__ == '__main__':
     posApp().run()
+    #close sdb.cursor and sdb.connection
+    sdb.cursor.close()
+    sdb.conn.close()      

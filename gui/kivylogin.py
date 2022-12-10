@@ -13,8 +13,9 @@ from kivy.metrics import dp #display pixels
 from kivymd.app import MDApp
 from kivymd.uix.list import *
 import os, sys
-sys.path.insert(0, "../sql")
-sys.path.insert(0, "../backend")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/backend") #Parent directory
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql") #Parent directory
 
 from login import Login as lg # ../backend/login.py
 

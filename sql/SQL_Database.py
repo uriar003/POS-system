@@ -1,15 +1,21 @@
 import sqlite3
 from datetime import datetime
 from math import isnan
-import sys
 from pathlib import Path
+import os
 '''
 ___________________________________________________________
 ______________Initialisation of the database_______________
 ___________________________________________________________
 '''
-DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
+
+#DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
 # Opening of the database
+dir = os.getcwd()
+i = dir.rfind('/')
+PARENTDIR = dir[:i]
+DATABASE_FILE = PARENTDIR+"/sql/POS_database.db"
+print(DATABASE_FILE)
 conn = sqlite3.connect(DATABASE_FILE)
 # Creation of the cursor
 cursor = conn.cursor()
