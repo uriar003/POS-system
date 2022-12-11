@@ -7,7 +7,7 @@ dir = os.getcwd()
 i = dir.rfind('/')
 DOWNLOAD_DIR = dir[:i]
 
-with open(DOWNLOAD_DIR+"/json/settings.json", "r") as fn:
+with open(DOWNLOAD_DIR+"\\json\\settings.json", "r") as fn:
     db = json.load(fn)
 print(db)
 
