@@ -6,11 +6,11 @@ block_cipher = None
 from kivymd import hooks_path as kivymd_hooks_path
 
 a = Analysis(
-    ['POS_Application.py'],
+    ['gui.py'],
     pathex=['\\home\\krayt\\compile\\'],
     binaries=[],
     datas=[('../backend/','.'),('../sql/','.'),('../modules/','.'), ('../json/','.'), ('account.kv', '.'), ('addInv.kv', '.'), ('adminLogin.kv', '.'), ('adminMenu.kv', '.'), ('cart.kv', '.'), ('frontPage.kv', '.'), ('helpScreen.kv', '.'), ('login.kv', '.'), ('mainPOS.kv', '.'), ('reports.kv', '.'), ('searchItem.kv', '.')],
-    hiddenimports=['pandas','os','sys', 'docx'],
+    hiddenimports=['pandas','os','sys', 'docx', 'smtplib', 'email', 'email.mime', 'email.mime.multipart', 'email.mime.text', 'email.mime.base', 'email.encoders'],
     hookspath=[kivymd_hooks_path],
     hooksconfig={},
     runtime_hooks=[],

@@ -7,12 +7,16 @@ from SQL_Database import search_customer
 from SQL_Database import see_item_bought
 from SQL_Database import search_order
 from SQL_Database import see_items
+from SQL_Database import conn
 #import win32com.client
 import sqlite3
 from datetime import datetime
 from pathlib import Path
-
-DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
+import sys, os
+dir = os.getcwd()
+i = dir.rfind('/')
+PARENTDIR = dir[:i]
+#DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
 # Opening of the database
 '''
 ________________________________________________________________________________________________________________________
@@ -45,7 +49,7 @@ def make_client_invoice(name,email,order,list_item):
     #ord = order.translate(str.maketrans('', '', ''.join(chars)))
     #order=ord.split(',')
     document=Document()
-    document.add_picture(str(Path(__file__).resolve().parent)+'/brand_logo.png', width=Inches(1))
+    document.add_picture(PARENTDIR+'/gui/brand_logo.png', width=Inches(1))
     document.add_paragraph('POS System Team')
     document.add_paragraph('333 S Twin Oaks Valley Rd')
     document.add_paragraph('San Marcos, CA 92096')
@@ -105,13 +109,14 @@ def make_client_invoice(name,email,order,list_item):
     document.add_paragraph('We appreciate your business see you later!')
     document.add_paragraph('Sincerely')
     document.add_paragraph('POS system team')
-
-    document.save(str(Path(__file__).resolve().parent.parent)+'/exports/receipt.docx')
+    ourDoc = PARENTDIR+'/exports/receipt.docx'
+    document.save(ourDoc)
+    return ourDoc
 
 
 def informations(transaction_id):
     # Opening of the database
-    conn = sqlite3.connect(DATABASE_FILE)
+    #conn = sqlite3.connect(DATABASE_FILE)
     items_bought = see_item_bought(transaction_id)
     list_item_id=[]
     list_item=[]

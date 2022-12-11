@@ -18,7 +18,7 @@ from kivymd.uix.list import *
 from kivymd.uix.datatables import MDDataTable
 
 import sqlite3
-
+import re
 from pathlib import Path
 import os, sys #for file paths
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/backend") #Parent directory
@@ -32,6 +32,7 @@ PARENTDIR = dir[:i]
 import dataTransformation as dt
 import SQL_Database as sdb
 import Invoices_generating as ig
+from eData import sendEmail
 
 import cv2                          # OpenCV is under Apache License 2.0, so it is free to use commercially
 import numpy as np
@@ -143,10 +144,12 @@ class cart(Screen):
 
     def sendEmail(self):
         #make_client_invoice('Julien Toulon', 'toulon.julien@gmail.com',items_bought,list_item)
-        items_bought, list_item=ig.informations('1')
+        items_bought, list_item=ig.informations(self.transactionId)
         name = self.ids.name.text 
         email = self.ids.email.text
-        ig.make_client_invoice(name, email, items_bought, list_item) 
+        if bool(re.match("^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$", email)):
+            invoiceLoc = ig.make_client_invoice(name, email, items_bought, list_item) 
+            sendEmail(email,name, invoiceLoc)
 
     def confirmTransaction(self):
         try:
@@ -199,10 +202,12 @@ class mainPOS(Screen):
         self.list_searchresults = []
         self.subtotal = 0
         # constantly call camera for barcode frames
-        # Clock.schedule_interval(self.tickerscanner, 1.0/2.0)
+        #Clock.schedule_interval(self.tickerscanner, 1.0/2.0)
         # constantly call search bar for new query
-        # Clock.schedule_interval(self.tickersearch, 1.0/2.0)
-        # self.cam = cv2.VideoCapture(1)
+        Clock.schedule_interval(self.tickersearch, 1.0/2.0)
+        #self.cam = cv2.VideoCapture(1)
+
+
         self.prior = None           # bool to prevent barcode over-rescanning
         self.priorsearch = None     # used to stop search if query is the same
         self.se = SearchEngine()
