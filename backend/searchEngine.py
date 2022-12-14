@@ -62,6 +62,7 @@ class SearchEngine:
         '''
         This is a generator function that will be called and will give the user back {amount} many ProductNodes in a list, along with the length of the dataframe.
         '''
+        self.__getDatabase()
         df = self.search(userInput) # Get the Dataframe of the objects.
         nodeArray = []
         counter = 0
@@ -79,6 +80,7 @@ class SearchEngine:
         '''
         This is a generator function that will be called and will give the user back {amount} many ProductNodes in a list, along with the length of the dataframe.
         '''
+        self.__getDatabase()
         df = self.search(userInput) # Get the Dataframe of the objects.
         nodeArray = []
         counter = 0

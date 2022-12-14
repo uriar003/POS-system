@@ -30,6 +30,7 @@ class LoadData:
 
         '''
         df = pd.DataFrame(columns=globalHeader[1:])
+        #print(fileloc+"TemplateFile.xlsx")
         df.to_excel(fileloc+"TemplateFile.xlsx", index=False)
 
 
@@ -95,6 +96,7 @@ class LoadData:
                         newList.append([str(x).replace("'","") if type(x) == str else x for x in cell])
                     doesntExist = sdb.format_list(newList)
                     sdb.add_item(doesntExist)
+            sdb.reconnectDb() # reconnect to the database.
             return True
         else:
             print("Invalid File type")

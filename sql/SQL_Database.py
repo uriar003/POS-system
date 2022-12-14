@@ -15,18 +15,17 @@ dir = os.getcwd()
 i = dir.rfind('/')
 PARENTDIR = dir[:i]
 DATABASE_FILE = PARENTDIR+"/sql/POS_database.db"
-print(DATABASE_FILE)
+#print(DATABASE_FILE)
 conn = sqlite3.connect(DATABASE_FILE)
 # Creation of the cursor
 cursor = conn.cursor()
-print("Database opened successfully")
+#print("Database opened successfully")
 
 '''
 ___________________________________________________________
 ____________________Primary functions______________________
 ___________________________________________________________
 '''
-
 
 # Creation of all the tables if not exist.
 def creation_tables():
@@ -96,7 +95,7 @@ def drop_table(table_name):
 def add_values(table, attributs, values):
     command = "INSERT OR REPLACE INTO ", table, attributs, "VALUES", values
     command = ''.join(command)
-    print(command)
+    #print(command)
     conn.execute(command)
     conn.commit()
 
@@ -111,7 +110,7 @@ def add_values_only(table, attributs, values):
 
 def update_values(table, attribut, new_value, row, old_value):
     command = "UPDATE ", table, " set ", attribut, " = ", new_value, " where ", row, " = ", old_value
-
+    print(command)
     command = ''.join(command)
     conn.execute(command)
     conn.commit()
@@ -127,13 +126,13 @@ def delete_values(table, attribut, value):
 def SQL_Query_with_target(target, request):
     target = target
     command = "SELECT", "FROM", "WHERE"
-    print(    request,
-        (target,),)
+    #print(    request,
+    #    (target,),)
     rows = cursor.execute(
         request,
         (target,),
     ).fetchall()
-    print(rows)  # Might need to remove #-Sean
+    #print(rows)  # Might need to remove #-Sean
     return rows
 
 
@@ -141,7 +140,7 @@ def SQL_Query_table(table):
     command = "SELECT * FROM ", table
     command = ''.join(command)
     rows = cursor.execute(command).fetchall()
-    print(rows)
+    #print(rows)
     return rows
 
 def SQL_Query_table_highest_id(table, column):
@@ -171,7 +170,7 @@ def format_list(inputs: list, items=False) -> str:
     else:
         for row in inputs:
             out += '('
-            #print(row)
+            ##print(row)
             for cell in row:
                 if type(cell) in (float, int) and not isnan(cell):
                     out += f"{cell},"
@@ -181,6 +180,17 @@ def format_list(inputs: list, items=False) -> str:
         out = out[:-1]
     return out
 
+
+def reconnectDb():
+    '''Used if we add product, we need to refresh the database.'''
+    global cursor
+    global conn
+    conn.commit()
+    cursor.close()
+    conn.close
+    conn = sqlite3.connect(DATABASE_FILE)
+    # Creation of the cursor
+    cursor = conn.cursor()
 
 '''
 ___________________________________________________________
@@ -210,6 +220,11 @@ def see_items(item_id):
 def change_number_stock(key, value):
     update_values('items', 'NUMBER', value, 'ITEM_ID', key)
 
+def decrement_stock(key):
+    #key is the itemID
+    vList = conn.execute(f"SELECT NUMBER FROM ITEMS WHERE ITEM_ID == '{key}'").fetchall()
+    value = str(vList[0][0] - 1)
+    update_values('items', 'NUMBER', value, 'ITEM_ID', str(key))
 
 def change_number_stock_bulk(llist):
     for cell in llist:
@@ -244,8 +259,8 @@ def add_order(values):
 def search_order(customer_id,dateb,datee):
     command = "SELECT ORDER_ID, CUSTOMER_ID, DATE, TOTAL_PRICE, STATUT FROM orders WHERE CUSTOMER_ID = ?"
     order=SQL_Query_with_target(customer_id, command)
-    print(order)
-    print(type(order))
+    #print(order)
+    #print(type(order))
     dateb = dateb.split('/')
     datee = datee.split('/')
     order_between_two_dates=[]
@@ -265,14 +280,14 @@ def search_order(customer_id,dateb,datee):
 
 # item_bought functions
 
-def add_item_boughts2(values):
+def add_item_boughts(values):
     add_values('items_bought', '(TRANSACTION_ID,DATE,ITEM_ID,NUMBER,PRICE,TAX)', values)
     
 
 
-def add_item_boughts(values):
-    print(values)
-    print(type(values))
+def add_item_boughtsOLD(values):
+    #print(values)
+    #print(type(values))
     valuesbis=values.split(',')
     item_id = valuesbis[1]
     characters = '"'
@@ -289,7 +304,7 @@ def add_item_boughts(values):
         else:
             continue
     item_price=''.join(item_price2)
-    print(item_price)
+    #print(item_price)
     date = str(datetime.now())
     values = values.split(',')
     date = '"', date, '"'
@@ -301,7 +316,7 @@ def add_item_boughts(values):
     tax='"' + str(tax) + '")'
     values.append(tax)
     values= ','.join(values)
-    print(values)
+    #print(values)
     add_values('items_bought', '(TRANSACTION_ID,DATE,ITEM_ID,NUMBER,PRICE,TAX)', values)
 
 def see_item_bought_w_d(customer_id,dateb, datee):
@@ -348,12 +363,12 @@ def calculate_balance(dateb, datee):
     dates2 = []
     rows2 = []
     rows = conn.execute("SELECT DATE,TRANSACTION_TYPE,TOTAL_PRICE FROM money_transactions").fetchall()
-    print(rows)
-    print(type(rows))
+    #print(rows)
+    #print(type(rows))
     list = [x for elem in rows for x in elem]
     for k in range(0, len(list) - 1, 3):
         dates.append(list[k])
-    print(dates)
+    #print(dates)
     for element in dates:
         var = element.split(' ')
         dates2.append(var[0])
@@ -361,9 +376,9 @@ def calculate_balance(dateb, datee):
     datee = datee.split('/')
     n = 0
     for element in dates2:
-        print(element)
+        #print(element)
         splitdate = element.split('-')
-        print(splitdate)
+        #print(splitdate)
         if dateb[0] <= splitdate[0] <= datee[0] and dateb[1] <= splitdate[1] <= datee[1] and dateb[2] <= splitdate[2] <= \
                 datee[2]:
             rows2.append(rows[n])
@@ -375,7 +390,7 @@ def calculate_balance(dateb, datee):
             balance -= element[2]
         else:
             continue
-    print('Your balance between ', dateb, ' and ', datee, ' is ', balance, '$')
+    #print('Your balance between ', dateb, ' and ', datee, ' is ', balance, '$')
     return rows2
 
 
@@ -425,8 +440,8 @@ creation_tables()
 #qr_code_item('124323')
 #search_customer('1')
 #value=see_item_bought_w_d('1','2022/11/30','2022/11/30')
-#print(value)
+##print(value)
 #conn.close()
-#print('Database closed successfully')
+##print('Database closed successfully')
 #list_order=search_order('6','2022/11/09','2022/11/11')
-#print(list_order)
+##print(list_order)

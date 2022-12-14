@@ -96,8 +96,7 @@ class cart(Screen):
         #self.ids.name.text = None
 
     def getCartData(self):
-        #make sure this is in main.kv under the Finish button:
-        # root.manager.get_screen('cart').getCartData()
+        """Moves the cart data over into the final transaction screen cart.kv"""
         dataset = screen_manager.get_screen('main').getTransaction()
         self.subtotal = dataset['Subtotal']
         self.tax = dataset['SalesTax']
@@ -105,15 +104,15 @@ class cart(Screen):
         self.orderTotal = float(self.subtotal * (1+ self.tax))
         self.isCC = False
         self.isCash = False
-        
-         
         self.ids.total.text = self.getDollar(self.orderTotal)
 
     def reset(self):
+        # Resets the text for approval.
         self.ids.approval.text = "Approved?"
 
 
     def cashTransaction(self):
+        """Processes the cash transaction"""
         try:
             customerPaid = int(self.ids.moneyPaid.text)
             changeDue = self.getDollar(self.orderTotal - customerPaid)
@@ -123,35 +122,37 @@ class cart(Screen):
             self.ids.changeDue.text = changeDue
             self.isCC = False
             self.isCash = True
-            print("Cash Transaction")
+            #print("Cash Transaction")
         except: pass
 
     def ccTransaction(self):
-        print(self.ids.ccNum.text)
+        """Processes the credit card transaction"""
+        #print(self.ids.ccNum.text)
         if len(str(self.ids.ccNum.text)) > 0:
             self.ccVerificationNum = self.ids.ccNum.text
             self.isCC = True
             self.isCash = False
-            print("CC Transaction")
-
-
+            #print("CC Transaction")
 
     def getDollar(self,variable):
+        """Helper function, to get the doller string."""
         #In case it ends at a 0, we need it to be xx.00 not xx.
         out = str("%.2f" % variable)
         if len(out[out.rfind('.')+1:]) == 1: out = out+"0"
         return "$"+out
 
     def sendEmail(self):
-        #make_client_invoice('Julien Toulon', 'toulon.julien@gmail.com',items_bought,list_item)
+        """Sends the email invoice to the customer"""
         items_bought, list_item=ig.informations(self.transactionId)
         name = self.ids.name.text 
         email = self.ids.email.text
+        # Only sends email, if the email matches a regex
         if bool(re.match("^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$", email)):
             invoiceLoc = ig.make_client_invoice(name, email, items_bought, list_item) 
             sendEmail(email,name, invoiceLoc)
 
     def confirmTransaction(self):
+        """Process the transaction and verifies the logic"""
         try:
             if not self.isCC and not self.isCash:   
                 self.err = "Needs cash or CC." 
@@ -160,26 +161,28 @@ class cart(Screen):
                     saleType = "CreditCard"
                     if not int(self.ccVerificationNum):
                         self.err = "Not a integer for CC id."
-                        raise Exception 
+                        #raise Exception 
                     cc = self.ccVerificationNum
                 else:
                     saleType = "CASH"
                     cc = 0
                 total = self.getDollar(self.subtotal * (1+ self.tax))[1:]
-                print(total, type(total))
+                #print(total, type(total))
                 order_data = [saleType,total , cc]
-                print("working")
+                #print("working")
                 date = sdb.add_transcation(order_data)
                 self.ids.approval.text = "Transaction\nSuccess!"
                 self.transactionId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
                 # Continue to add items for the order.
                 for product in self.cart:
-                    print(product)
+                    #print(product)
                     item_id = product[0]
                     prod = product[1]
                     price = product[5]
                     productDetails = sdb.format_list([self.transactionId, date, item_id, product[-1], price, self.tax])
-                    sdb.add_item_boughts2(productDetails)
+                    sdb.decrement_stock(item_id)
+                    sdb.add_item_boughts(productDetails)
+                sdb.reconnectDb()
                 
                 #clearcart
                 screen_manager.get_screen('main').cart_deleteall()
@@ -187,9 +190,11 @@ class cart(Screen):
                 self.ids.moneyPaid.text = ""
                 self.ids.changeDue.text = ""
                 self.ids.ccNum.text = ""
+                self.isCC = False
+                self.isCash = False
         except Exception as e:
             self.ids.approval.text = f"Failed to transact.\n{self.err}"
-            print(e)
+            #print(e)
         
 class addInv(Screen):
     pass
@@ -233,7 +238,7 @@ class mainPOS(Screen):
             # if barcode was detected | self.prior conditional prevents overscanning a barcode
             if(len(decode(frame)) > 0):
                 if(decode(frame)[0].data != self.prior):
-                    print("barcode found")
+                    #print("barcode found")
                     self.prior = decode(frame)[0].data
                     self.addscanitem(frame)
                 else:
@@ -252,7 +257,7 @@ class mainPOS(Screen):
             # Seans code
             searchedName = self.ids.searchprompt.text   # Replace this with the value that is searched.
             # I initialized self.se in the __init__ self.se = SearchEngine()
-            searched_obj = self.se.search_product(userInput=searchedName, amount=4)
+            searched_obj = self.se.search_product(userInput=searchedName, amount=8)
             countOfprod = next(searched_obj) # The first item will be the count
             # So if it's 0, then there are no results.
             # Otherwise, it'll return up to 4 values per search 
@@ -260,7 +265,7 @@ class mainPOS(Screen):
             for setOfProd in searched_obj: # Loop through and make a list of lists
                 listOfList.append(setOfProd)
 
-            #print(setOfProd)
+            ##print(setOfProd)
             # Since the DB is so small, if we search Mario, only 4 items return   
 
             # ****
@@ -282,7 +287,7 @@ class mainPOS(Screen):
                 rl.bind(on_release = self.addsearchitem)
                 self.ids.mdlSEARCHRESULTS.add_widget(rl)
         else:
-            print("Search not refreshed, query hasn't changed!")
+            pass#print("Search not refreshed, query hasn't changed!")
 
     def addscanitem(self, frame):
         flag_exist = False
@@ -294,8 +299,8 @@ class mainPOS(Screen):
         # params: item id, name, barcode, picture, number in stock, price, desc, item in cart at first add
         # SQLitem = [ 27, "Name", barcode, "picture.jfif", num in stock, price, desc, 1 ]
         retSQL = sdb.qr_code_item(bliteral)
-        print("Adding", bliteral)
-        print("retrieved:", retSQL)
+        #print("Adding", bliteral)
+        #print("retrieved:", retSQL)
         # guard if barcode does not return a matching item result
         if(len(retSQL) > 0):
             SQLitem = [
@@ -304,14 +309,14 @@ class mainPOS(Screen):
 
             for e in self.list_cart:
                 if(SQLitem[2] == e[2]):
-                    print("exists")
+                    #print("exists")
                     e[7] += 1
                     flag_exist = True
                     break
             if(flag_exist == False):
                 self.list_cart.append(SQLitem)
         else:
-            print("no item matching barcode")
+            #print("no item matching barcode")
             
             box = BoxLayout(orientation = "vertical", padding = 10)
             lb = Label(text = "No item found matching barcode ")
@@ -332,16 +337,16 @@ class mainPOS(Screen):
 
     def addsearchitem(self, search_item):
         flag_exist = False
-        print("Cart:", self.list_cart)
+        #print("Cart:", self.list_cart)
         for i in self.list_searchresults:
             # if clicked mdlist tertiary text (id) equals item id in internal list, then add to cart
             # ThreeLineCompactItem cannot retain SQLitem (obj) data so I have to do this
             if(search_item.tertiary_text == str(i[0])):
-                print("matched")
+                #print("matched")
                 # now compare the search sqlitem if it exists in the cart already
                 for e in self.list_cart:
                     if(e[0] == i[0]):
-                        print("exists")
+                        #print("exists")
                         i[7] += 1
                         flag_exist = True
                         break
@@ -353,7 +358,7 @@ class mainPOS(Screen):
         self.update_cart()
 
     def update_cart(self):
-        print("Cart", self.list_cart)
+        #print("Cart", self.list_cart)
         self.ids.mdlCART.clear_widgets()
         self.subtotal = 0.00        
 
@@ -404,8 +409,8 @@ class account(Screen):
     selectedFile = ''
     dir = os.getcwd()
     i = dir.rfind('/')
-    exports = PARENTDIR
-    print(exports)
+    exports = PARENTDIR + "/Inventory/Exports/"
+    #print(exports)
     def selected(self, filename):
         try:
             #return file path on click
@@ -422,48 +427,33 @@ class account(Screen):
     #exports = str(Path(__file__).resolve().parent.parent)+"/Inventory/exports/"
     
     def submitImport(self):
-        print("loading...")
-        print(self.selectedFile)
+        #print("loading...")
+        #print(self.selectedFile)
         LoadData.load_inventory(self.selectedFile)
-        print("Inventory loaded")
+        #print("Inventory loaded")
 
     def sendExport(self):
-        print("generating...")
+        #print("generating...")
         LoadData.export_inventory(self.exports)
-        print("Database Exported")
+        #print("Database Exported")
     
     def sendTExport(self):
-        print("generating...")
+        #print("generating...")
         LoadData.export_template(self.exports)
-        print("Template Exported")
+        #print("Template Exported")
 
 class searchItem(Screen):
     def __init__(self, **kwargs):
         super(Screen, self).__init__(**kwargs)
+        self.setRecords()
 
-        #find correct file path
-        #path = os.path.dirname(os.path.abspath(__file__))
-        path = str(Path(__file__).resolve().parent.parent)+"/sql"
-        database = os.path.join(path,'POS_database.db')
-
-        #Opening of the database
-        #conn = sqlite3.sdb.connect(database)
-
-        #Creation of the sdb.cursor ("robot to do database stuff for you")
-        #cursor = sdb.conn.sdb.cursor()
-        #print("Database opened successfully") #WILL CREATE A NEW FILE IF NOT FOUND
-
-        #store row data into records variable before building table
+    def setRecords(self):
+        ''' Get the updated list of products'''
         sdb.cursor.execute("SELECT ITEM_ID, NAME, NUMBER, PRICE, DESCRIPTION FROM items")
         sdb.conn.commit()
-        ##testing query
-        #for row in sdb.cursor:
-            #print(row)
         records = sdb.cursor.fetchall()
-        #print(records)
 
- 
-
+        ##print(records)
         table = MDDataTable(
                 pos_hint = {'center_x': 0.5, 'center_y': 0.5},
                 size_hint = (0.9, 0.75),
@@ -513,15 +503,15 @@ class posApp(MDApp):
         if key == "LOGIN":
             if login.interact(data,key):
                 # If returns true, set the page to go to the POS.
-                print(True)
+                #print(True)
                 return "main"
         elif key == "CHANGEPASS":
             if helpScreen.interact(data, key):
-                print("True")
+                #print("True")
                 return("login")
         elif key == "ADMINLOGIN":
             if adminLogin.interact(data,key):
-                print(True)
+                #print(True)
                 return ("adminMenu")
                 
         elif key in ["ADMINCHANGEUSERPASS", "CREATEUSER"]:
@@ -536,7 +526,7 @@ class posApp(MDApp):
         over to the cart.
         """
         z = screen_manager.get_screen('main').list_cart
-        print(z)
+        #print(z)
 
 if __name__ == '__main__':
     posApp().run()
