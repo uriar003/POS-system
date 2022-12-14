@@ -9,7 +9,7 @@ a = Analysis(
     ['gui.py'],
     pathex=['\\home\\krayt\\FINAL\\'],
     binaries=[],
-    datas=[('../backend/','.'),('../sql/','.'),('../modules/','.'), ('../json/','.'), ('account.kv', '.'), ('addInv.kv', '.'), ('adminLogin.kv', '.'), ('adminMenu.kv', '.'), ('cart.kv', '.'), ('frontPage.kv', '.'), ('helpScreen.kv', '.'), ('login.kv', '.'), ('mainPOS.kv', '.'), ('reports.kv', '.'), ('searchItem.kv', '.')],
+    datas=[('./yourcart.png', '.'),('../backend/','.'),('../sql/','.'),('../modules/','.'), ('../json/settings.json','.'), ('account.kv', '.'), ('addInv.kv', '.'), ('adminLogin.kv', '.'), ('adminMenu.kv', '.'), ('cart.kv', '.'), ('frontPage.kv', '.'), ('helpScreen.kv', '.'), ('login.kv', '.'), ('mainPOS.kv', '.'), ('reports.kv', '.'), ('searchItem.kv', '.')],
     hiddenimports=['openpyxl', 'openpyxl.cell._writer', 'pandas','os','sys', 'docx', 'smtplib', 'email', 'email.mime', 'email.mime.multipart', 'email.mime.text', 'email.mime.base', 'email.encoders'],
     hookspath=[kivymd_hooks_path],
     hooksconfig={},

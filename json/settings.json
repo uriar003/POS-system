@@ -1,6 +1,7 @@
 {
     "EmailUsername" : "cs441group1@gmail.com",
     "EmailPassword" : "kdnmiffmxomxbjmr",
+    "MainDirectory" : "/home/krayt/FINALPRODUCT",
     "Scanner"       : true,
     "TaxRate"       : 0.0775
 }

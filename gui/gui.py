@@ -16,7 +16,10 @@ from kivy.core.window import Window
 from kivymd.app import MDApp
 from kivymd.uix.list import *
 from kivymd.uix.datatables import MDDataTable
+from kivy.config import Config
+Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 
+import json
 import sqlite3
 import re
 from pathlib import Path
@@ -26,6 +29,31 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql") #Parent d
 dir = os.getcwd()
 i = dir.rfind('/')
 PARENTDIR = dir[:i]
+
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app 
+    # path into variable _MEIPASS'.
+    PARENTDIR = sys._MEIPASS + "/"
+    background = PARENTDIR + "/yourcart.png"
+    with open(PARENTDIR+"/settings.json", "r") as fn:
+        db = json.load(fn)
+else:
+    #PARENTDIR = os.path.dirname(os.path.abspath(__file__))
+    with open("../json/settings.json", "r") as fn:
+        db = json.load(fn)
+    PARENTDIR = ""
+    background = "yourcart.png"
+    
+
+"""
+dir = os.getcwd()
+i = dir.rfind('/')
+PARENTDIR = dir[:i]
+i = PARENTDIR.rfind('/')
+MAINDIR = PARENTDIR[:i]
+"""
+
 #PARENTDIR = str(Path(__file__).resolve().parent.parent)
 
 #import sql.SQL_Database
@@ -42,17 +70,17 @@ from kivylogin import login, helpScreen, adminLogin, adminMenu
 from searchEngine import SearchEngine
 from dataTransformation import LoadData
 
-Builder.load_file('frontPage.kv')
-Builder.load_file('login.kv')
-Builder.load_file('mainPOS.kv')
-Builder.load_file('cart.kv')
-Builder.load_file('reports.kv')
-Builder.load_file('addInv.kv')
-Builder.load_file('account.kv')
-Builder.load_file('searchItem.kv')
-Builder.load_file('helpScreen.kv')
-Builder.load_file('adminLogin.kv')
-Builder.load_file("adminMenu.kv")
+Builder.load_file(PARENTDIR+'frontPage.kv')
+Builder.load_file(PARENTDIR+'login.kv')
+Builder.load_file(PARENTDIR+'mainPOS.kv')
+Builder.load_file(PARENTDIR+'cart.kv')
+Builder.load_file(PARENTDIR+'reports.kv')
+Builder.load_file(PARENTDIR+'addInv.kv')
+Builder.load_file(PARENTDIR+'account.kv')
+Builder.load_file(PARENTDIR+'searchItem.kv')
+Builder.load_file(PARENTDIR+'helpScreen.kv')
+Builder.load_file(PARENTDIR+'adminLogin.kv')
+Builder.load_file(PARENTDIR+"adminMenu.kv")
 
 screen_manager = ScreenManager()
 
@@ -202,6 +230,7 @@ class addInv(Screen):
 class mainPOS(Screen):
     def __init__(self, **kwargs):
         super(Screen, self).__init__(**kwargs)
+        #self.theme_cls.theme_style = "Dark"
         # list to manage summary items amt list on the right above the sales totals
         self.list_cart = []
         self.list_searchresults = []
@@ -391,6 +420,9 @@ class mainPOS(Screen):
         self.list_cart.clear()
         self.update_cart()
 
+    def getBackground(self):
+        return background
+
 class reports(Screen):
     @staticmethod
     def dailySales():
@@ -409,7 +441,7 @@ class account(Screen):
     selectedFile = ''
     dir = os.getcwd()
     i = dir.rfind('/')
-    exports = PARENTDIR + "/Inventory/Exports/"
+    exports =  db["MainDirectory"]+ "Inventory/Exports/"
     #print(exports)
     def selected(self, filename):
         try:

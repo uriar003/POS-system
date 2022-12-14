@@ -13,9 +13,21 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 import sys, os
-dir = os.getcwd()
-i = dir.rfind('/')
-PARENTDIR = dir[:i]
+import json
+
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app 
+    # path into variable _MEIPASS'.
+    PARENTDIR = sys._MEIPASS
+else:
+    PARENTDIR = os.path.dirname(os.path.abspath(__file__))
+    PARENTDIR = os.getcwd()
+    i = PARENTDIR.rfind('/')
+    PARENTDIR = PARENTDIR[:i] + "/json"
+with open(PARENTDIR+"/settings.json", "r") as fn:
+    db = json.load(fn)
+
 #DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
 # Opening of the database
 '''
@@ -109,7 +121,7 @@ def make_client_invoice(name,email,order,list_item):
     document.add_paragraph('We appreciate your business see you later!')
     document.add_paragraph('Sincerely')
     document.add_paragraph('POS system team')
-    ourDoc = PARENTDIR+'/exports/receipt.docx'
+    ourDoc = db["MainDirectory"]+'/Inventory/receipt.docx'
     document.save(ourDoc)
     return ourDoc
 

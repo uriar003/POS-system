@@ -7,10 +7,24 @@ from datetime import datetime
 from collections import defaultdict
 import openpyxl.cell._writer
 import os
-dir = os.getcwd()
-i = dir.rfind('/')
-DOWNLOAD_DIR = dir[:i]
-DOWNLOAD_DIR += "/Inventory/Reports/"
+import json
+#dir = os.getcwd()
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app 
+    # path into variable _MEIPASS'.
+    PARENTDIR = sys._MEIPASS
+else:
+    #PARENTDIR = os.path.dirname(os.path.abspath(__file__))
+    PARENTDIR = os.getcwd()
+    i = PARENTDIR.rfind('/')
+    PARENTDIR = PARENTDIR[:i] + "/json"
+with open(PARENTDIR+"/settings.json", "r") as fn:
+    db = json.load(fn)
+    
+DOWNLOAD_DIR = db["MainDirectory"] + "/Inventory/Reports/"
+
+
 globalHeader = ["ITEM_ID", "NAME", "BARECODE", "PICTURE", "COUNT", "PRICE", "DESCRIPTION"]
 itemsBoughtHeader = ["TRANSACTION_ID", "DATE", "ITEM_ID", "NUMBER", "PRICE", "TAX"]
 money_header = [

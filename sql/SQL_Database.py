@@ -2,7 +2,8 @@ import sqlite3
 from datetime import datetime
 from math import isnan
 from pathlib import Path
-import os
+
+import sys, os
 '''
 ___________________________________________________________
 ______________Initialisation of the database_______________
@@ -11,11 +12,27 @@ ___________________________________________________________
 
 #DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
 # Opening of the database
+import json
+import sys, os
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app 
+    # path into variable _MEIPASS'.
+    PARENTDIR = sys._MEIPASS
+    with open(PARENTDIR+"/settings.json", "r") as fn:
+        db = json.load(fn)
+    DATABASE_FILE = db["MainDirectory"]+"/sql/POS_database.db"
+else:
+    #PARENTDIR = os.path.dirname(os.path.abspath(__file__))
+    DATABASE_FILE = "../sql/POS_database.db"
+
+"""
 dir = os.getcwd()
 i = dir.rfind('/')
 PARENTDIR = dir[:i]
-DATABASE_FILE = PARENTDIR+"/sql/POS_database.db"
-#print(DATABASE_FILE)
+"""
+
+print(DATABASE_FILE)
 conn = sqlite3.connect(DATABASE_FILE)
 # Creation of the cursor
 cursor = conn.cursor()
@@ -110,7 +127,6 @@ def add_values_only(table, attributs, values):
 
 def update_values(table, attribut, new_value, row, old_value):
     command = "UPDATE ", table, " set ", attribut, " = ", new_value, " where ", row, " = ", old_value
-    print(command)
     command = ''.join(command)
     conn.execute(command)
     conn.commit()

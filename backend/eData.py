@@ -3,12 +3,24 @@ import json
 import os, sys #for file paths
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-dir = os.getcwd()
-i = dir.rfind('/')
+
 #i = dir.rfind('\\')
-DOWNLOAD_DIR = dir[:i]
-with open(DOWNLOAD_DIR+"/json/settings.json", "r") as fn:
-#with open(DOWNLOAD_DIR+"\\json\\settings.json", "r") as fn:
+#DOWNLOAD_DIR = dir[:i]
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app 
+    # path into variable _MEIPASS'.
+    PARENTDIR = sys._MEIPASS
+else:
+    PARENTDIR = os.path.dirname(os.path.abspath(__file__))
+    PARENTDIR = os.getcwd()
+    i = PARENTDIR.rfind('/')
+    PARENTDIR = PARENTDIR[:i] + "/json"
+#    i = PARENTDIR.rfind('/')
+#PARENTDIR = os.getcwd()
+#i = PARENTDIR.rfind('/')
+#MAINDIR = PARENTDIR[:i]
+with open(PARENTDIR+"/settings.json", "r") as fn:
     db = json.load(fn)
 
 
