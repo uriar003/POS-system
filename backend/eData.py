@@ -5,9 +5,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 dir = os.getcwd()
 i = dir.rfind('/')
+#i = dir.rfind('\\')
 DOWNLOAD_DIR = dir[:i]
-
-with open(DOWNLOAD_DIR+"\\json\\settings.json", "r") as fn:
+with open(DOWNLOAD_DIR+"/json/settings.json", "r") as fn:
+#with open(DOWNLOAD_DIR+"\\json\\settings.json", "r") as fn:
     db = json.load(fn)
 print(db)
 
@@ -19,6 +20,9 @@ from email.mime.base import MIMEBase
 from email.encoders import encode_base64
 
 def sendEmail(receiver, name, docname):
+    '''
+    Function reads in the settings.json file so that we can use the email specified inside of its code to email customers
+    '''
     body = f'''Hello,
     {name}
     '''

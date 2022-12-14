@@ -30,7 +30,6 @@ class Ui(IntEnum):
     PASSWORD = 3
 
 
-
 class Login:
     @staticmethod
     def create_user(username:str, password:str, isAdmin:bool=False):
