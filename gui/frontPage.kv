@@ -58,31 +58,6 @@
                 root.manager.transition.duration = 1
                 root.manager.current = 'login'
 
-        Button:
-            text: "Log In As Guest"
-
-            #font properties
-            font_size:self.height/2.50
-            pos_hint:{'center_x':0.50}
-            bold: True
-            outline_color:(0,0,0)
-            outline_width: 2
-
-            #height and proportions of button
-            size_hint_y:0.20
-            height:80
-
-            
-            #background color properties
-            background_normal: ''
-            background_color: (41/255,75/255,150/255,0.5)
-
-            #button press action to transition to new screen
-            on_press:
-                root.manager.transition.direction = 'left'
-                root.manager.transition.duration = 1
-                root.manager.current = 'main'
-
 
         Button:
 

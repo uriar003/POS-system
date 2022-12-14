@@ -73,6 +73,7 @@
                     root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
                     root.manager.current = 'search'
+                    root.manager.get_screen('search').setRecords()
 
             Button:
                 text:"Reports"
@@ -90,7 +91,6 @@
                 on_press:
                     root.manager.transition.direction = 'left'
                     root.manager.transition.duration = 1
-                    root.setRecords()
                     root.manager.current = 'reports'
 
             Label:

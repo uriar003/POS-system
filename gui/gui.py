@@ -12,7 +12,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
-
+from kivy.core.window import Window
 from kivymd.app import MDApp
 from kivymd.uix.list import *
 from kivymd.uix.datatables import MDDataTable
@@ -174,13 +174,13 @@ class cart(Screen):
                 self.ids.approval.text = "Transaction\nSuccess!"
                 self.transactionId =sdb.SQL_Query_table_highest_id("money_transactions", "TRANSACTION_ID")
                 # Continue to add items for the order.
+                print(self.cart)
                 for product in self.cart:
-                    #print(product)
                     item_id = product[0]
                     prod = product[1]
                     price = product[5]
                     productDetails = sdb.format_list([self.transactionId, date, item_id, product[-1], price, self.tax])
-                    sdb.decrement_stock(item_id)
+                    sdb.decrement_stock(item_id, product[-1])
                     sdb.add_item_boughts(productDetails)
                 sdb.reconnectDb()
                 
@@ -529,6 +529,7 @@ class posApp(MDApp):
         #print(z)
 
 if __name__ == '__main__':
+    Window.size = (1000, 700)
     posApp().run()
     #close sdb.cursor and sdb.connection
     sdb.cursor.close()

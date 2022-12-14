@@ -220,10 +220,10 @@ def see_items(item_id):
 def change_number_stock(key, value):
     update_values('items', 'NUMBER', value, 'ITEM_ID', key)
 
-def decrement_stock(key):
+def decrement_stock(key, count):
     #key is the itemID
     vList = conn.execute(f"SELECT NUMBER FROM ITEMS WHERE ITEM_ID == '{key}'").fetchall()
-    value = str(vList[0][0] - 1)
+    value = str(vList[0][0] - count)
     update_values('items', 'NUMBER', value, 'ITEM_ID', str(key))
 
 def change_number_stock_bulk(llist):
