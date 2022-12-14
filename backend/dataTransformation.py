@@ -5,6 +5,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent)+"/sql")
 import SQL_Database as sdb
 from datetime import datetime
 from collections import defaultdict
+import openpyxl.cell._writer
 import os
 dir = os.getcwd()
 i = dir.rfind('/')
