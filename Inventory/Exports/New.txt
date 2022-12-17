@@ -1,3 +1,0 @@
-*DO NOT DELETE*
-
-Code will look for this file titled 'New' to find the correct directory to save inventory exports.

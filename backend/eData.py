@@ -11,17 +11,18 @@ if getattr(sys, 'frozen', False):
     # extends the sys module by a flag frozen=True and sets the app 
     # path into variable _MEIPASS'.
     PARENTDIR = sys._MEIPASS
+    with open(PARENTDIR+"/settings.json", "r") as fn:
+        db = json.load(fn)
 else:
     PARENTDIR = os.path.dirname(os.path.abspath(__file__))
     PARENTDIR = os.getcwd()
     i = PARENTDIR.rfind('/')
     PARENTDIR = PARENTDIR[:i] + "/json"
-#    i = PARENTDIR.rfind('/')
-#PARENTDIR = os.getcwd()
-#i = PARENTDIR.rfind('/')
-#MAINDIR = PARENTDIR[:i]
-with open(PARENTDIR+"/settings.json", "r") as fn:
-    db = json.load(fn)
+    PARENTDIR = str(Path(__file__).resolve().parent.parent)
+    with open(PARENTDIR+"/json/settings.json", "r") as fn:
+        db = json.load(fn)
+
+    
 
 
 import smtplib

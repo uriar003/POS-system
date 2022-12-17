@@ -20,13 +20,16 @@ if getattr(sys, 'frozen', False):
     # extends the sys module by a flag frozen=True and sets the app 
     # path into variable _MEIPASS'.
     PARENTDIR = sys._MEIPASS
+    with open(PARENTDIR+"/settings.json", "r") as fn:
+        db = json.load(fn)
 else:
     PARENTDIR = os.path.dirname(os.path.abspath(__file__))
     PARENTDIR = os.getcwd()
     i = PARENTDIR.rfind('/')
     PARENTDIR = PARENTDIR[:i] + "/json"
-with open(PARENTDIR+"/settings.json", "r") as fn:
-    db = json.load(fn)
+    PARENTDIR = str(Path(__file__).resolve().parent.parent)
+    with open(PARENTDIR+"/json/settings.json", "r") as fn:
+        db = json.load(fn)
 
 #DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
 # Opening of the database
@@ -61,7 +64,7 @@ def make_client_invoice(name,email,order,list_item):
     #ord = order.translate(str.maketrans('', '', ''.join(chars)))
     #order=ord.split(',')
     document=Document()
-    document.add_picture(PARENTDIR+'/gui/brand_logo.png', width=Inches(1))
+    document.add_picture(PARENTDIR+'/brand_logo.png', width=Inches(1))
     document.add_paragraph('POS System Team')
     document.add_paragraph('333 S Twin Oaks Valley Rd')
     document.add_paragraph('San Marcos, CA 92096')

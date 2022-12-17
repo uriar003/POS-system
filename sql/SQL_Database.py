@@ -24,7 +24,8 @@ if getattr(sys, 'frozen', False):
     DATABASE_FILE = db["MainDirectory"]+"/sql/POS_database.db"
 else:
     #PARENTDIR = os.path.dirname(os.path.abspath(__file__))
-    DATABASE_FILE = "../sql/POS_database.db"
+    #DATABASE_FILE = "../sql/POS_database.db"
+    DATABASE_FILE = str(Path(__file__).resolve().parent)+"/POS_database.db"
 
 """
 dir = os.getcwd()
